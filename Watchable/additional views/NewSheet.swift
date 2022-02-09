@@ -25,7 +25,7 @@ struct NewSheet: View {
     @State var iconTheme = "Default"
     @State var themeTypes = ["Default", "Action", "Fantasy", "Sci-Fi", "Drama", "Comedy", "Romance", "Horror", "Documentary", "Game Show"]
     
-    @State var platformTypes = ["Theater", "Netflix", "Hulu", "HBO Max", "Prime Video", "Disney+", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Paid Only", "Unknown"]
+    @State var platformTypes = ["Theater", "Netflix", "Hulu", "HBO Max", "Prime Video", "Disney+", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Funimation", "Paid Only", "Unknown"]
     @State var platform = "Theater"
     
     @State var reoccuringTypes = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -63,11 +63,13 @@ struct NewSheet: View {
                         Picker("Theme", selection: $iconTheme, content: {
                             ForEach(themeTypes, id: \.self, content: {
                                 pickerLabel(name: $0, image: getImageForType(type: $0))
+                                    .foregroundColor(.pink)
                             })
                         })
                         Picker("Platform", selection: $platform, content: {
                             ForEach(platformTypes, id: \.self, content: {
                                 Text($0)
+                                    .foregroundColor(.pink)
                             })
                         })
                     }

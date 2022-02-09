@@ -393,6 +393,7 @@ struct ContentView: View {
                 
             }
             .searchable(text: $searchText)
+            .disableAutocorrection(true)
             .onAppear(perform: { loadItems() })
             .sheet(isPresented: $showNewSheet, onDismiss: {
                 loadItems()
@@ -470,7 +471,6 @@ func dayDifference(date1: Date, date2: Date) -> Int {
     let day1 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: date1)!
     let day2 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: date2)!
     
-    
     let diffs = Calendar.current.dateComponents([.day], from: day1, to: day2)
     return diffs.day!
 }
@@ -502,7 +502,7 @@ struct editPage: View {
     @State private var notes = ""
     @State var iconTheme = "Default"
     @State var themeTypes = ["Default", "Action", "Fantasy", "Sci-Fi", "Drama", "Comedy", "Romance", "Horror", "Documentary", "Game Show"]
-    @State var platformTypes = ["Theater", "Netflix", "Hulu", "HBO Max", "Prime Video", "Disney+", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Paid Only", "Unknown"]
+    @State var platformTypes = ["Theater", "Netflix", "Hulu", "HBO Max", "Prime Video", "Disney+", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Funimation", "Paid Only", "Unknown"]
     @State var platform = "Theater"
     @State var reoccuringTypes = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     @State var reoccuringDay = "Sunday"
@@ -557,11 +557,13 @@ struct editPage: View {
                     Picker("Theme", selection: $iconTheme, content: {
                         ForEach(themeTypes, id: \.self, content: {
                             editPickerLabel(name: $0, image: getImageForType(type: $0))
+                                .foregroundColor(.pink)
                         })
                     })
                     Picker("Platform", selection: $platform, content: {
                         ForEach(platformTypes, id: \.self, content: {
                             Text($0)
+                                .foregroundColor(.pink)
                         })
                     })
                 }
@@ -593,7 +595,7 @@ struct editPage: View {
                 }
             }
             
-            if platform != "Default" && platform != "Theater" && platform != "Unknown" && platform != "Paid Only" {
+            if platform != "Default" && platform != "Theater" && platform != "Unknown" && platform != "Paid Only" && platform != "Funimation" {
             Section {
                 Button {
                     let titleReformatted = title.replacingOccurrences(of: "?", with: "%3F").replacingOccurrences(of: " ", with: "%20")
@@ -633,6 +635,11 @@ struct editPage: View {
                         UIApplication.shared.open(URL(string: "crunchyroll://")!)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                             UIApplication.shared.open(URL(string: "https://crunchyroll.com")!)
+                        })
+                    case "Funimation":
+                        UIApplication.shared.open(URL(string: "Funimation//")!)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                            UIApplication.shared.open(URL(string: "https://funimation.com")!)
                         })
                     default:
                         print("ERROR: NO APPLICATION ASSOSIATED WITH PLATFORM, THIS BUTTON SHOULD NOT HAVE BEEN VISIBLE")
