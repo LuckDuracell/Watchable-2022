@@ -148,6 +148,22 @@ struct ContentView: View {
         total = activeMovies.count + activeShows.count + inactiveMovies.count + inactiveShows.count 
     }
     
+    func movFavoritesCount(movies: [MovieV3], visible: Bool) -> Int {
+        var output: Int = 0
+        for i in movies.indices {
+            if movies[i].favorited == true && visible == false { output += 1 }
+        }
+        return output
+    }
+
+    func showFavoritesCount(shows: [ShowV3], visible: Bool) -> Int {
+        var output: Int = 0
+        for i in shows.indices {
+            if shows[i].favorited == true && visible == false { output += 1 }
+        }
+        return output
+    }
+    
     init() {
         if isFirstTimeOpening() {
             UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
@@ -443,33 +459,34 @@ struct ContentView: View {
                     NavigationLink(destination: {
                         ScrollView {
                             VStack {
+                                if settings.isEmpty == false {
                                     VStack {
                                         HStack {
                                             VStack {
                                                 Text("Watchable")
                                                     .bold()
                                                     .padding(.vertical, 2)
-                                                Text("Movies: \(activeMovies.count + inactiveMovies.count)")
-                                                Text("Shows: \(activeShows.count + inactiveShows.count)")
+                                                Text("Movies: \(activeMovies.count + inactiveMovies.count - movFavoritesCount(movies: activeMovies, visible: settings[0].showFavorites) - movFavoritesCount(movies: inactiveMovies, visible: settings[0].showFavorites))")
+                                                Text("Shows: \(activeShows.count + inactiveShows.count - showFavoritesCount(shows: activeShows, visible: settings.first?.showFavorites ?? true) - showFavoritesCount(shows: inactiveShows, visible: settings[0].showFavorites))")
                                             }
                                             Divider()
                                             VStack {
                                                 Text("Upcoming")
                                                     .bold()
                                                     .padding(.vertical, 2)
-                                                Text("Movies: \(upcomingMovies.count)")
-                                                Text("Shows: \(upcomingShows.count)")
+                                                Text("Movies: \(upcomingMovies.count - movFavoritesCount(movies: upcomingMovies, visible: settings.first?.showFavorites ?? true))")
+                                                Text("Shows: \(upcomingShows.count - showFavoritesCount(shows: upcomingShows, visible: settings.first?.showFavorites ?? true))")
                                             }
                                             Divider()
                                             VStack {
                                                 Text("Totals")
                                                     .bold()
                                                     .padding(.vertical, 2)
-                                                Text("Movies: \(upcomingMovies.count + activeMovies.count + inactiveMovies.count)")
-                                                Text("Shows: \(upcomingShows.count + activeShows.count + inactiveShows.count)")
+                                                Text("Movies: \(upcomingMovies.count + activeMovies.count + inactiveMovies.count - movFavoritesCount(movies: activeMovies, visible: settings.first?.showFavorites ?? true) - movFavoritesCount(movies: inactiveMovies, visible: settings.first?.showFavorites ?? true) - movFavoritesCount(movies: upcomingMovies, visible: settings.first?.showFavorites ?? true))")
+                                                Text("Shows: \(upcomingShows.count + activeShows.count + inactiveShows.count - showFavoritesCount(shows: activeShows, visible: settings.first?.showFavorites ?? true) - showFavoritesCount(shows: inactiveShows, visible: settings.first?.showFavorites ?? true) - showFavoritesCount(shows: upcomingShows, visible: settings.first?.showFavorites ?? true) )")
                                             }
                                         }
-                                        Text("\(upcomingMovies.count + activeMovies.count + inactiveMovies.count + upcomingShows.count + activeShows.count + inactiveShows.count)")
+                                        Text("\(upcomingMovies.count + activeMovies.count + inactiveMovies.count + upcomingShows.count + activeShows.count + inactiveShows.count  - showFavoritesCount(shows: activeShows, visible: settings.first?.showFavorites ?? true) - showFavoritesCount(shows: inactiveShows, visible: settings.first?.showFavorites ?? true) - showFavoritesCount(shows: upcomingShows, visible: settings.first?.showFavorites ?? true) - movFavoritesCount(movies: activeMovies, visible: settings.first?.showFavorites ?? true) - movFavoritesCount(movies: inactiveMovies, visible: settings.first?.showFavorites ?? true) - movFavoritesCount(movies: upcomingMovies, visible: settings.first?.showFavorites ?? true))")
                                             .bold()
                                             .padding(.vertical, 2)
                                     }
@@ -477,7 +494,7 @@ struct ContentView: View {
                                     .background(Color.gray.opacity(0.2))
                                     .cornerRadius(15)
                                     .padding(.horizontal)
-                                
+                                }
                                 Divider()
                                 
                                 NavigationLink(destination: {
@@ -1135,3 +1152,5 @@ struct notif {
     let name: String
     let announceDate: Date
 }
+
+
