@@ -9,12 +9,12 @@ import SwiftUI
 
 struct WatchableOverlay: View {
     
-    let activeMovies: [Movie]
-    let activeShows: [ShowV2]
-    let inactiveMovies: [Movie]
-    let inactiveShows: [ShowV2]
-    let upcomingMovies: [Movie]
-    let upcomingShows: [ShowV2]
+    let activeMovies: [MovieV3]
+    let activeShows: [ShowV3]
+    let inactiveMovies: [MovieV3]
+    let inactiveShows: [ShowV3]
+    let upcomingMovies: [MovieV3]
+    let upcomingShows: [ShowV3]
     @Binding var showTotalOverlay: Bool
     
     var body: some View {

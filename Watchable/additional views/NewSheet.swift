@@ -10,8 +10,8 @@ import SwiftUI
 struct NewSheet: View {
     
     @Binding var showSheet: Bool
-    @Binding var movies: [Movie]
-    @Binding var showsV2: [ShowV2]
+    @Binding var movies: [MovieV3]
+    @Binding var showsV3: [ShowV3]
     
     @State private var selectedDate: Date = Date()
     @State private var showDate: Bool = false
@@ -34,6 +34,8 @@ struct NewSheet: View {
     @State var active = false
     @State var reoccuring = false
     
+    @State var favorited = false
+    
     
     
     var body: some View {
@@ -50,14 +52,18 @@ struct NewSheet: View {
                         .padding(.top)
                     }
                     
-                    Section {
+                    Section("Title", content: {
                         TextField("Title", text: $title)
                             .autocapitalization(.words)
                             .disableAutocorrection(true)
                             .keyboardType(.alphabet)
-                        
-                        TextField("Notes", text: $notes)
-                    }
+                    })
+                    
+                    Section("Notes", content: {
+                        TextEditor(text: $notes)
+                            .disableAutocorrection(true)
+                            .keyboardType(.alphabet)
+                    })
                     
                     Section {
                         Picker("Theme", selection: $iconTheme, content: {
@@ -108,16 +114,16 @@ struct NewSheet: View {
                             if active {
                                 selectedDate = Date()
                             }
-                            movies.insert(Movie(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform), at: 0)
-                            Movie.saveToFile(movies)
+                            movies.insert(MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), at: 0)
+                            MovieV3.saveToFile(movies)
                         }
                     } else {
                         if title != "" {
                             if active {
                                 selectedDate = Date()
                             }
-                            showsV2.insert(ShowV2(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay))), at: 0)
-                            ShowV2.saveToFile(showsV2)
+                            showsV3.insert(ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), at: 0)
+                            ShowV3.saveToFile(showsV3)
                             
                         }
                     }
@@ -143,7 +149,7 @@ struct NewSheet: View {
 
 struct NewSheet_Previews: PreviewProvider {
     static var previews: some View {
-        NewSheet(showSheet: .constant(true), movies: .constant([]), showsV2: .constant([]))
+        NewSheet(showSheet: .constant(true), movies: .constant([]), showsV3: .constant([]))
             //.preferredColorScheme(.dark)
     }
 }

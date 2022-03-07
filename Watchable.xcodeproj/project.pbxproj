@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A25021227CEA0D700BDCF73 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A25021127CEA0D700BDCF73 /* FavoritesView.swift */; };
 		0A61289D26B3D43300098972 /* WatchableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A61289C26B3D43300098972 /* WatchableApp.swift */; };
 		0A61289F26B3D43300098972 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A61289E26B3D43300098972 /* ContentView.swift */; };
 		0A6128A126B3D43400098972 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A6128A026B3D43400098972 /* Assets.xcassets */; };
@@ -14,6 +15,7 @@
 		0A6128AE26B3D43400098972 /* WatchableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6128AD26B3D43400098972 /* WatchableTests.swift */; };
 		0A6128B826B3D43500098972 /* WatchableUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6128B726B3D43500098972 /* WatchableUITests.swift */; };
 		0A6128C526B3D4E900098972 /* PersistanceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6128C426B3D4E900098972 /* PersistanceData.swift */; };
+		0A9E09F827CB783B0089F31F /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E09F727CB783B0089F31F /* HistoryView.swift */; };
 		0ABAFD0726ED607A00563D89 /* NewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABAFD0626ED607A00563D89 /* NewSheet.swift */; };
 		0ABBF46826BF7465005B0601 /* WatchableOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABBF46726BF7465005B0601 /* WatchableOverlay.swift */; };
 /* End PBXBuildFile section */
@@ -36,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A25021127CEA0D700BDCF73 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		0A61289926B3D43300098972 /* Watchable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watchable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A61289C26B3D43300098972 /* WatchableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WatchableApp.swift; path = Watchable/WatchableApp.swift; sourceTree = "<group>"; };
 		0A61289E26B3D43300098972 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = Watchable/ContentView.swift; sourceTree = "<group>"; };
@@ -46,6 +49,7 @@
 		0A6128B326B3D43400098972 /* WatchableUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WatchableUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A6128B726B3D43500098972 /* WatchableUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchableUITests.swift; sourceTree = "<group>"; };
 		0A6128C426B3D4E900098972 /* PersistanceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PersistanceData.swift; path = Watchable/PersistanceData.swift; sourceTree = "<group>"; };
+		0A9E09F727CB783B0089F31F /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		0ABAFD0626ED607A00563D89 /* NewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSheet.swift; sourceTree = "<group>"; };
 		0ABBF46726BF7465005B0601 /* WatchableOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchableOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -137,6 +141,8 @@
 			isa = PBXGroup;
 			children = (
 				0ABBF46726BF7465005B0601 /* WatchableOverlay.swift */,
+				0A9E09F727CB783B0089F31F /* HistoryView.swift */,
+				0A25021127CEA0D700BDCF73 /* FavoritesView.swift */,
 				0ABAFD0626ED607A00563D89 /* NewSheet.swift */,
 			);
 			name = "additional views";
@@ -159,6 +165,8 @@
 			dependencies = (
 			);
 			name = Watchable;
+			packageProductDependencies = (
+			);
 			productName = Watching;
 			productReference = 0A61289926B3D43300098972 /* Watchable.app */;
 			productType = "com.apple.product-type.application";
@@ -231,6 +239,8 @@
 				Base,
 			);
 			mainGroup = 0A61289026B3D43300098972;
+			packageReferences = (
+			);
 			productRefGroup = 0A61289A26B3D43300098972 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -274,8 +284,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A6128C526B3D4E900098972 /* PersistanceData.swift in Sources */,
+				0A9E09F827CB783B0089F31F /* HistoryView.swift in Sources */,
 				0A61289F26B3D43300098972 /* ContentView.swift in Sources */,
 				0ABBF46826BF7465005B0601 /* WatchableOverlay.swift in Sources */,
+				0A25021227CEA0D700BDCF73 /* FavoritesView.swift in Sources */,
 				0ABAFD0726ED607A00563D89 /* NewSheet.swift in Sources */,
 				0A61289D26B3D43300098972 /* WatchableApp.swift in Sources */,
 			);
@@ -436,7 +448,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 743;
+				CURRENT_PROJECT_VERSION = 1200;
 				DEVELOPMENT_ASSET_PATHS = "\"Watchable/Preview Content\"";
 				DEVELOPMENT_TEAM = RV78ENMXZ2;
 				ENABLE_PREVIEWS = YES;
@@ -452,7 +464,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.3;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luckdev.Watchable;
 				PRODUCT_NAME = Watchable;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -468,7 +480,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 743;
+				CURRENT_PROJECT_VERSION = 1200;
 				DEVELOPMENT_ASSET_PATHS = "\"Watchable/Preview Content\"";
 				DEVELOPMENT_TEAM = RV78ENMXZ2;
 				ENABLE_PREVIEWS = YES;
@@ -484,7 +496,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.3;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luckdev.Watchable;
 				PRODUCT_NAME = Watchable;
 				SWIFT_EMIT_LOC_STRINGS = YES;
