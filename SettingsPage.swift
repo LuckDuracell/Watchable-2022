@@ -18,6 +18,9 @@ struct SettingsPage: View {
     @Binding var upcomingMovies: [MovieV3]
     @Binding var upcomingShows: [ShowV3]
     
+    @Binding var loadItemsTrigger: Bool
+    @State var copySettings = [UserSettings(showFavorites: true, colorScheme: "nil")]
+    
     let options = ["Match System", "Always Light", "Always Dark"]
     
     var body: some View {
@@ -107,6 +110,29 @@ struct SettingsPage: View {
                         
                 })
                 
+                NavigationLink(destination: {
+                    AppIconView()
+                }, label: {
+                    HStack {
+                        Image(systemName: "questionmark.app.fill")
+                            .foregroundColor(.pink)
+                            .font(.system(size: 20, weight: .medium))
+                        Text("App Icon")
+                            .font(.system(size: 20, weight: .medium, design: .rounded))
+                            .foregroundColor(.primary)
+                            .frame(height: 20)
+                            .truncationMode(.tail)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(15)
+                    .padding(.horizontal)
+                        
+                })
+                
                 if settings.isEmpty == false {
                     Divider()
                         Toggle(isOn: $settings[0].showFavorites, label: {
@@ -125,12 +151,15 @@ struct SettingsPage: View {
                         .background(Color.gray.opacity(0.2))
                         .cornerRadius(15)
                         .padding(.horizontal)
-                    Picker("App Appearance", selection: $settings[0].colorScheme, content: {
+                    Picker("App Appearance", selection: $copySettings[0].colorScheme, content: {
                         ForEach(options, id: \.self, content: { option in
                             Text(option)
                         })
-                    }) .onChange(of: settings[0].colorScheme, perform: { value in
-                         UserSettings.saveToFile(settings)
+                    })
+                    .onAppear(perform: { copySettings = settings })
+                    .onChange(of: copySettings[0].colorScheme, perform: { value in
+                        UserSettings.saveToFile(copySettings)
+                        loadItemsTrigger = true
                     })
                     .pickerStyle(.segmented)
                     .padding()
@@ -156,14 +185,6 @@ func showFavoritesCount(shows: [ShowV3], visible: Bool) -> Int {
     var output: Int = 0
     for i in shows.indices {
         if shows[i].favorited == true && visible == false { output += 1 }
-    }
-    return output
-}
-
-func colorToScheme(theScheme: String) -> ColorScheme {
-    var output: ColorScheme = .light
-    if theScheme == "Always Dark Mode" {
-        output = .dark
     }
     return output
 }

@@ -18,16 +18,16 @@ struct WatchableApp: App {
 }
 
 
-func updateColors(settings: [UserSettings]) -> ColorScheme {
-    @Environment(\.colorScheme) var deviceColor
-    var output = deviceColor
-    if settings.isEmpty == false {
-        if settings[0].colorScheme == "Always Light" {
-            output = .light
-        } else if settings[0].colorScheme == "Always Dark" {
-            output = .dark
-        }
+
+func colorToScheme(theScheme: String) -> ColorScheme {
+    @Environment(\.colorScheme) var cScheme
+    var output: ColorScheme = cScheme
+    
+    if theScheme == "Always Dark" {
+        output = .dark
+    } else if theScheme == "Always Light" {
+        output = .light
     }
-    print(deviceColor)
+    
     return output
 }

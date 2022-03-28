@@ -11,6 +11,7 @@ import UserNotifications
 struct ContentView: View {
     
     @State var settings = UserSettings.loadFromFile()
+    @State var cScheme = "Match System"
     
     init() {
         if isFirstTimeOpening() {
@@ -27,6 +28,25 @@ struct ContentView: View {
     
     var body: some View {
         MainPage(settings: $settings)
-            .preferredColorScheme(updateColors(settings: settings))
+            .if(cScheme != "Match System", transform: { view in
+                view.preferredColorScheme(colorToScheme(theScheme: cScheme))
+            })
+            .onAppear(perform: {
+                cScheme = settings.first?.colorScheme ?? "Match System"
+            })
+            .onChange(of: settings, perform: { value in
+                cScheme = settings[0].colorScheme
+                print("CSCHEME   " + cScheme)
+            })
+    }
+}
+
+extension View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }

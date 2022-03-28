@@ -52,7 +52,7 @@ struct MainPage: View {
     @State private var total = 0
 
     @Binding var settings: [UserSettings]
-    @Environment(\.colorScheme) var deviceColor
+    @State var loadItemsTrigger: Bool = false
     
     fileprivate func gatherLatestData() {
         if versionNumber.isEmpty {
@@ -95,11 +95,10 @@ struct MainPage: View {
     
     fileprivate func loadItems() {
         
+        loadItemsTrigger = false
         print(" V NUM \(versionNumber)")
         print(movies)
         print(showsV2)
-        
-        settings = UserSettings.loadFromFile()
         
         gatherLatestData()
         
@@ -107,6 +106,8 @@ struct MainPage: View {
         
         moviesV3 = MovieV3.loadFromFile()
         showsV3 = ShowV3.loadFromFile()
+        
+        settings = UserSettings.loadFromFile()
         
         inactiveMovies.removeAll()
         inactiveShows.removeAll()
@@ -198,7 +199,7 @@ struct MainPage: View {
                                         .foregroundColor(.gray)
                                         .padding(.top, 25)
                                         .onTapGesture(count: 3, perform: {
-                                            ytEasterEgg.toggle()
+                                            //ytEasterEgg.toggle()
                                         })
                                     Spacer()
                                 } .padding(.horizontal)
@@ -449,8 +450,11 @@ struct MainPage: View {
 //                            Text("\(total)")
 //                        }
                     NavigationLink(destination: {
-                        SettingsPage(settings: $settings, activeMovies: $activeMovies, activeShows: $activeShows, inactiveMovies: $inactiveMovies, inactiveShows: $inactiveShows, upcomingMovies: $upcomingMovies, upcomingShows: $upcomingShows)
+                        SettingsPage(settings: $settings, activeMovies: $activeMovies, activeShows: $activeShows, inactiveMovies: $inactiveMovies, inactiveShows: $inactiveShows, upcomingMovies: $upcomingMovies, upcomingShows: $upcomingShows, loadItemsTrigger: $loadItemsTrigger)
                             .onAppear(perform: {
+                                loadItems()
+                            })
+                            .onChange(of: loadItemsTrigger, perform: { value in
                                 loadItems()
                             })
                     }, label: {
@@ -484,17 +488,17 @@ struct MainPage: View {
                     .toggleStyle(SwitchToggleStyle(tint: Color.pink))
             })
         } .accentColor(.pink)
-        .alert(isPresented: $ytEasterEgg, content: {
-            Alert(title: Text("Oh cool you found an easter egg!"), primaryButton: .destructive(Text(UIApplication.shared.alternateIconName == "AppIcon-1" ? "Give me the old icon back" : "Gimme my prize"), action: {
-                if UIApplication.shared.alternateIconName == "AppIcon-1" {
-                    UIApplication.shared.setAlternateIconName(nil)
-                } else {
-                    UIApplication.shared.setAlternateIconName("AppIcon-1")
-                }
-                ytEasterEgg = true
-                print("toggling icon")
-            }), secondaryButton: .cancel(Text("Ew gross go away")))
-        })
+//        .alert(isPresented: $ytEasterEgg, content: {
+//            Alert(title: Text("Oh cool you found an easter egg!"), primaryButton: .destructive(Text(UIApplication.shared.alternateIconName == "AppIcon-1" ? "Give me the old icon back" : "Gimme my prize"), action: {
+//                if UIApplication.shared.alternateIconName == "AppIcon-1" {
+//                    UIApplication.shared.setAlternateIconName(nil)
+//                } else {
+//                    UIApplication.shared.setAlternateIconName("AppIcon-1")
+//                }
+//                ytEasterEgg = true
+//                print("toggling icon")
+//            }), secondaryButton: .cancel(Text("Ew gross go away")))
+//        })
     }
 }
 
