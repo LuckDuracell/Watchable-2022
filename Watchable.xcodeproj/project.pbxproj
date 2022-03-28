@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0A25021227CEA0D700BDCF73 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A25021127CEA0D700BDCF73 /* FavoritesView.swift */; };
+		0A5D9C1327EFF9BD00EEA8E9 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5D9C1227EFF9BD00EEA8E9 /* SettingsPage.swift */; };
+		0A5D9C1727F0E7F100EEA8E9 /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5D9C1627F0E7F100EEA8E9 /* MainPage.swift */; };
 		0A61289D26B3D43300098972 /* WatchableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A61289C26B3D43300098972 /* WatchableApp.swift */; };
 		0A61289F26B3D43300098972 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A61289E26B3D43300098972 /* ContentView.swift */; };
 		0A6128A126B3D43400098972 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A6128A026B3D43400098972 /* Assets.xcassets */; };
@@ -39,6 +41,8 @@
 
 /* Begin PBXFileReference section */
 		0A25021127CEA0D700BDCF73 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
+		0A5D9C1227EFF9BD00EEA8E9 /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		0A5D9C1627F0E7F100EEA8E9 /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
 		0A61289926B3D43300098972 /* Watchable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watchable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A61289C26B3D43300098972 /* WatchableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WatchableApp.swift; path = Watchable/WatchableApp.swift; sourceTree = "<group>"; };
 		0A61289E26B3D43300098972 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = Watchable/ContentView.swift; sourceTree = "<group>"; };
@@ -104,6 +108,8 @@
 			children = (
 				0A61289C26B3D43300098972 /* WatchableApp.swift */,
 				0A61289E26B3D43300098972 /* ContentView.swift */,
+				0A5D9C1627F0E7F100EEA8E9 /* MainPage.swift */,
+				0A5D9C1227EFF9BD00EEA8E9 /* SettingsPage.swift */,
 				0A6128C426B3D4E900098972 /* PersistanceData.swift */,
 				0A6128A026B3D43400098972 /* Assets.xcassets */,
 				0ABBF46926C25487005B0601 /* additional views */,
@@ -285,7 +291,9 @@
 			files = (
 				0A6128C526B3D4E900098972 /* PersistanceData.swift in Sources */,
 				0A9E09F827CB783B0089F31F /* HistoryView.swift in Sources */,
+				0A5D9C1727F0E7F100EEA8E9 /* MainPage.swift in Sources */,
 				0A61289F26B3D43300098972 /* ContentView.swift in Sources */,
+				0A5D9C1327EFF9BD00EEA8E9 /* SettingsPage.swift in Sources */,
 				0ABBF46826BF7465005B0601 /* WatchableOverlay.swift in Sources */,
 				0A25021227CEA0D700BDCF73 /* FavoritesView.swift in Sources */,
 				0ABAFD0726ED607A00563D89 /* NewSheet.swift in Sources */,
@@ -448,7 +456,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1210;
+				CURRENT_PROJECT_VERSION = 1500;
 				DEVELOPMENT_ASSET_PATHS = "\"Watchable/Preview Content\"";
 				DEVELOPMENT_TEAM = RV78ENMXZ2;
 				ENABLE_PREVIEWS = YES;
@@ -464,7 +472,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luckdev.Watchable;
 				PRODUCT_NAME = Watchable;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -480,7 +488,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1210;
+				CURRENT_PROJECT_VERSION = 1500;
 				DEVELOPMENT_ASSET_PATHS = "\"Watchable/Preview Content\"";
 				DEVELOPMENT_TEAM = RV78ENMXZ2;
 				ENABLE_PREVIEWS = YES;
@@ -496,7 +504,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.luckdev.Watchable;
 				PRODUCT_NAME = Watchable;
 				SWIFT_EMIT_LOC_STRINGS = YES;

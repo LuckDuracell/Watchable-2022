@@ -25,7 +25,7 @@ struct NewSheet: View {
     @State var iconTheme = "Default"
     @State var themeTypes = ["Default", "Action", "Fantasy", "Sci-Fi", "Drama", "Comedy", "Romance", "Horror", "Documentary", "Game Show"]
     
-    @State var platformTypes = ["Theater", "Netflix", "Hulu", "HBO Max", "Prime Video", "Disney+", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Funimation", "Paid Only", "Unknown"]
+    @State var platformTypes = ["Theater", "Netflix", "Hulu", "HBO Max", "Prime Video", "Disney+", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Paid Only", "Unknown"]
     @State var platform = "Theater"
     
     @State var reoccuringTypes = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -36,7 +36,7 @@ struct NewSheet: View {
     
     @State var favorited = false
     
-    
+    @FocusState var showKeyboard: Bool
     
     var body: some View {
         NavigationView {
@@ -53,16 +53,17 @@ struct NewSheet: View {
                     }
                     
                     Section("Title", content: {
-                        TextField("Title", text: $title)
+                        TextField("", text: $title)
                             .autocapitalization(.words)
                             .disableAutocorrection(true)
                             .keyboardType(.alphabet)
+                            .focused($showKeyboard)
                     })
                     
                     Section("Notes", content: {
                         TextEditor(text: $notes)
-                            .disableAutocorrection(true)
                             .keyboardType(.alphabet)
+                            .focused($showKeyboard)
                     })
                     
                     Section {
@@ -95,7 +96,7 @@ struct NewSheet: View {
                     Section {
                         Toggle("Currently Watching", isOn: $active)
                         if typePicker == "Show" {
-                            Toggle("Reoccuring", isOn: $reoccuring)
+                            Toggle("Reocurring", isOn: $reoccuring)
                             if reoccuring {
                                 Picker("Releases", selection: $reoccuringDay, content: {
                                     ForEach(reoccuringTypes, id: \.self, content: {
@@ -107,7 +108,18 @@ struct NewSheet: View {
                     }
    
                 }
-                
+                .toolbar(content: {
+                    ToolbarItemGroup(placement: .keyboard, content: {
+                        HStack {
+                            Spacer()
+                            Button {
+                                showKeyboard = false
+                            } label: {
+                                Text("Done")
+                            }
+                        }
+                    })
+                })
                 Button {
                     if typePicker == "Movie" {
                         if title != "" {
@@ -150,7 +162,7 @@ struct NewSheet: View {
 struct NewSheet_Previews: PreviewProvider {
     static var previews: some View {
         NewSheet(showSheet: .constant(true), movies: .constant([]), showsV3: .constant([]))
-            //.preferredColorScheme(.dark)
+    
     }
 }
 

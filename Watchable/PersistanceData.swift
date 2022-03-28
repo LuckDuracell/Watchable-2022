@@ -30,6 +30,7 @@ struct UserSettings: Hashable, Codable, LocalFileStorable {
         return "UserSettings"
     }
     var showFavorites: Bool
+    var colorScheme: String
 }
 
 struct Movie: Hashable, Codable, LocalFileStorable {
