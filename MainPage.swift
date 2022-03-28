@@ -174,7 +174,7 @@ struct MainPage: View {
             ScrollView {
                 ZStack {
                     //background object to reload page
-                    if movies.count == 0 && showsV2.count == 0 {
+                    if moviesV3.count == 0 && showsV3.count == 0 {
                         VStack {
                             Spacer()
                             Text("Welcome to Watchable!")
