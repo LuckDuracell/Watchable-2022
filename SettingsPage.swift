@@ -165,7 +165,21 @@ struct SettingsPage: View {
                     .padding()
                 }
             }
-            Text("1.5")
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                Button {
+                    guard let urlShare = URL(string: "https://apps.apple.com/us/app/watchable/id1586489845") else { return }
+                           let activityVC = UIActivityViewController(activityItems: [urlShare], applicationActivities: nil)
+                    activityVC.title = "Share the app with your friends!"
+                    
+                    UIApplication.shared.windows.first?.rootViewController?
+                        .present(activityVC, animated: true, completion: nil)
+                    
+                } label: {
+                    Text("Share App")
+                        .padding()
+                }
+            }
+            Text("1.5.3")
                 .font(.footnote)
                 .foregroundColor(.gray)
                 .padding(100)
