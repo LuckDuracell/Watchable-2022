@@ -132,6 +132,28 @@ struct SettingsPage: View {
                     .padding(.horizontal)
                         
                 })
+//                NavigationLink(destination: {
+//                    APITestView()
+//                }, label: {
+//                    HStack {
+//                        Image(systemName: "antenna.radiowaves.left.and.right")
+//                            .foregroundColor(.pink)
+//                            .font(.system(size: 20, weight: .medium))
+//                        Text("API Test")
+//                            .font(.system(size: 20, weight: .medium, design: .rounded))
+//                            .foregroundColor(.primary)
+//                            .frame(height: 20)
+//                            .truncationMode(.tail)
+//                        Spacer()
+//                        Image(systemName: "chevron.right")
+//                            .foregroundColor(.gray)
+//                    }
+//                    .padding()
+//                    .background(Color.gray.opacity(0.2))
+//                    .cornerRadius(15)
+//                    .padding(.horizontal)
+//                        
+//                })
                 
                 if settings.isEmpty == false {
                     Divider()
