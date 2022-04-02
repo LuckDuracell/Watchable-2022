@@ -187,6 +187,27 @@ struct SettingsPage: View {
                     .padding()
                 }
             }
+            
+            Button {
+                UIApplication.shared.open(URL(string: "https://twitter.com/luckduracell")!)
+            } label: {
+                HStack {
+                    Image("twitter")
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 20, height: 20, alignment: .center)
+                        .foregroundColor(.pink)
+                    Text("Creator's Twitter")
+                    Spacer()
+                    Image(systemName: "arrow.up.right.square")
+                }
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(15)
+                .padding(.horizontal)
+            }
+            
+            
             if UIDevice.current.userInterfaceIdiom == .phone {
                 Button {
                     guard let urlShare = URL(string: "https://apps.apple.com/us/app/watchable/id1586489845") else { return }
@@ -201,10 +222,10 @@ struct SettingsPage: View {
                         .padding()
                 }
             }
-            Text("1.5.3")
+            Text("1.5.4")
                 .font(.footnote)
                 .foregroundColor(.gray)
-                .padding(100)
+                .padding(80)
         }
     }
 }

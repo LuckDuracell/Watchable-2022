@@ -55,6 +55,7 @@ struct MainPage: View {
     @State var loadItemsTrigger: Bool = false
     
     fileprivate func gatherLatestData() {
+        //V1 ->
         if versionNumber.isEmpty {
             movies = Movie.loadFromFile()
             showsV2 = ShowV2.loadFromFile()
@@ -73,22 +74,70 @@ struct MainPage: View {
             VersionNumber.saveToFile(versionNumber)
             MovieV3.saveToFile(moviesV3)
             ShowV3.saveToFile(showsV3)
-        } else {
-            if versionNumber.first!.ver == 1 {
-                let moviesTemp = moviesV3
-                let showsTemp = showsV3
-                moviesV3.removeAll()
-                showsV3.removeAll()
-                for i in moviesTemp.indices {
-                    moviesV3.append(MovieV3(name: moviesTemp[i].name, icon: moviesTemp[i].icon, releaseDate: moviesTemp[i].releaseDate, active: moviesTemp[i].active, info: moviesTemp[i].info, platform: moviesTemp[i].platform == "Funimation" ? "Crunchyroll" : moviesTemp[i].platform, favorited: moviesTemp[i].favorited))
+        }
+        //----------------
+        versionNumber = VersionNumber.loadFromFile()
+        //Funimation to Crunchyroll
+        if versionNumber.first!.ver == 1 {
+            let moviesTemp = moviesV3
+            let showsTemp = showsV3
+            moviesV3.removeAll()
+            showsV3.removeAll()
+            for i in moviesTemp.indices {
+                moviesV3.append(MovieV3(name: moviesTemp[i].name, icon: moviesTemp[i].icon, releaseDate: moviesTemp[i].releaseDate, active: moviesTemp[i].active, info: moviesTemp[i].info, platform: moviesTemp[i].platform == "Funimation" ? "Crunchyroll" : moviesTemp[i].platform, favorited: moviesTemp[i].favorited))
+            }
+            for i in showsTemp.indices {
+                showsV3.append(ShowV3(name: showsTemp[i].name, icon: showsTemp[i].icon, releaseDate: showsTemp[i].releaseDate, active: showsTemp[i].active, info: showsTemp[i].info, platform: showsTemp[i].platform == "Funimation" ? "Crunchyroll" : showsTemp[i].platform, reoccuring: showsTemp[i].reoccuring, reoccuringDate: showsTemp[i].reoccuringDate, favorited: showsTemp[i].favorited))
+            }
+            versionNumber[0].ver = 2
+            VersionNumber.saveToFile(versionNumber)
+            //-------------------
+            MovieV3.saveToFile(moviesV3)
+            ShowV3.saveToFile(showsV3)
+        }
+    }
+    
+    fileprivate func loadMovies(_ releaseDates: inout [Date], _ notifs: inout [String], _ notifIndex: inout Int) {
+        for index in moviesV3.indices {
+            
+            if moviesV3[index].active {
+                activeMovies.append(moviesV3[index])
+                activeMoviesIndexs.append(index)
+            } else if checkUpcoming(date: moviesV3[index].releaseDate) {
+                upcomingMovies.append(moviesV3[index])
+                upcomingMoviesIndexs.append(index)
+                if releaseDates.contains(moviesV3[index].releaseDate) {
+                    notifs[releaseDates.firstIndex(of: moviesV3[index].releaseDate)!].append(", \(moviesV3[index].name)")
+                } else {
+                    notifIndex += 1
+                    releaseDates.append(moviesV3[index].releaseDate)
+                    notifs.append(moviesV3[index].name)
                 }
-                for i in showsTemp.indices {
-                    showsV3.append(ShowV3(name: showsTemp[i].name, icon: showsTemp[i].icon, releaseDate: showsTemp[i].releaseDate, active: showsTemp[i].active, info: showsTemp[i].info, platform: showsTemp[i].platform == "Funimation" ? "Crunchyroll" : showsTemp[i].platform, reoccuring: showsTemp[i].reoccuring, reoccuringDate: showsTemp[i].reoccuringDate, favorited: showsTemp[i].favorited))
+                scheduleNotification(title: "Watchable", info: "\(moviesV3[index].name) comes out today!", date: moviesV3[index].releaseDate)
+            } else {
+                inactiveMovies.append(moviesV3[index])
+                inactiveMoviesIndexs.append(index)
+            }
+        }
+    }
+    
+    fileprivate func loadShows() {
+        for index in showsV3.indices {
+            if showsV3[index].active {
+                activeShows.append(showsV3[index])
+                activeShowsIndexs.append(index)
+                if showsV3[index].reoccuring {
+                    let day = Calendar.current.dateComponents([.weekday], from: showsV3[index].reoccuringDate)
+                    scheduleWeeklyNotification(title: "Watchable", info: "An episode of \(showsV3[index].name) comes out today!", date: createDate(weekday: day.weekday!))
+                    print("REOCCURING")
                 }
-                versionNumber[0].ver = 2
-                VersionNumber.saveToFile(versionNumber)
-                MovieV3.saveToFile(moviesV3)
-                ShowV3.saveToFile(showsV3)
+            } else if checkUpcoming(date: showsV3[index].releaseDate) {
+                upcomingShows.append(showsV3[index])
+                upcomingShowsIndexs.append(index)
+                scheduleNotification(title: "Watchable", info: "\(showsV3[index].name) releases today!", date: showsV3[index].releaseDate)
+            } else {
+                inactiveShows.append(showsV3[index])
+                inactiveShowsIndexs.append(index)
             }
         }
     }
@@ -96,10 +145,7 @@ struct MainPage: View {
     fileprivate func loadItems() {
         
         loadItemsTrigger = false
-        print(" V NUM \(versionNumber)")
-        print(movies)
-        print(showsV2)
-        
+        print(" VERSION NUMBER: \(versionNumber)")
         gatherLatestData()
         
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -126,45 +172,9 @@ struct MainPage: View {
         var notifs: [String] = []
         var notifIndex = 0
         
-        for index in moviesV3.indices {
-            
-            if moviesV3[index].active {
-                activeMovies.append(moviesV3[index])
-                activeMoviesIndexs.append(index)
-            } else if checkUpcoming(date: moviesV3[index].releaseDate) {
-                upcomingMovies.append(moviesV3[index])
-                upcomingMoviesIndexs.append(index)
-                if releaseDates.contains(moviesV3[index].releaseDate) {
-                    notifs[releaseDates.firstIndex(of: moviesV3[index].releaseDate)!].append(", \(moviesV3[index].name)")
-                } else {
-                    notifIndex += 1
-                    releaseDates.append(moviesV3[index].releaseDate)
-                    notifs.append(moviesV3[index].name)
-                }
-                scheduleNotification(title: "Watchable", info: "\(moviesV3[index].name) comes out today!", date: moviesV3[index].releaseDate)
-            } else {
-                inactiveMovies.append(moviesV3[index])
-                inactiveMoviesIndexs.append(index)
-            }
-        }
+        loadMovies(&releaseDates, &notifs, &notifIndex)
         
-        for index in showsV3.indices {
-            if showsV3[index].active {
-                activeShows.append(showsV3[index])
-                activeShowsIndexs.append(index)
-                if showsV3[index].reoccuring {
-                    let day = Calendar.current.dateComponents([.weekday], from: showsV3[index].reoccuringDate)
-                    scheduleWeeklyNotification(title: "Watchable", info: "An episode of \(showsV3[index].name) comes out today!", date: createDate(weekday: day.weekday!))
-                }
-            } else if checkUpcoming(date: showsV3[index].releaseDate) {
-                upcomingShows.append(showsV3[index])
-                upcomingShowsIndexs.append(index)
-                scheduleNotification(title: "Watchable", info: "\(showsV3[index].name) releases today!", date: showsV3[index].releaseDate)
-            } else {
-                inactiveShows.append(showsV3[index])
-                inactiveShowsIndexs.append(index)
-            }
-        }
+        loadShows()
         
         total = activeMovies.count + activeShows.count + inactiveMovies.count + inactiveShows.count
     }
@@ -950,7 +960,6 @@ func createDate(weekday: Int) -> Date {
         components.hour = 0
         components.minute = 1
         components.weekday = weekday // sunday = 1 ... saturday = 7
-        components.weekdayOrdinal = 10
         components.timeZone = .current
 
         return calendar.date(from: components)!
@@ -998,7 +1007,7 @@ func scheduleWeeklyNotification(title: String, info: String, date: Date) {
     content.body = info
 
     //let triggerWeekly = Calendar.current.dateComponents([.weekday, .hour, .minute, .second,], from: date)
-    let triggerWeekly = Calendar.current.dateComponents([.weekday, .hour, .minute, .second,], from: date)
+    let triggerWeekly = Calendar.current.dateComponents([.weekday, .hour, .minute], from: date)
     print("SCHEDULING WEEKLY: \(triggerWeekly)")
     let trigger = UNCalendarNotificationTrigger(dateMatching: triggerWeekly, repeats: true)
 

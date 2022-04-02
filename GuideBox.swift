@@ -9,9 +9,14 @@ import Foundation
 
 struct WatchableItem: Codable {
     var title: String
+    var subtitle: String
+    var themes: [String]
     var release: Date
-    var source: String
-    var sourceType: String
+    var synopsis: String
+    var sources: [String]
+    var itemType: Int
     var poster: URL
-    var season: Int
+    var seasons: Int
+    var releaseDay: Int
+    var currentlyReleasing: Bool
 }
