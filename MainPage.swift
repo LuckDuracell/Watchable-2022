@@ -492,8 +492,11 @@ struct MainPage: View {
             .sheet(isPresented: $showNewSheet, onDismiss: {
                 loadItems()
             },content: {
-                NewSheet(showSheet: $showNewSheet, movies: $moviesV3, showsV3: $showsV3)
-                    .interactiveDismissDisabled(true)
+//                NewSheet(showSheet: $showNewSheet, movies: $moviesV3, showsV3: $showsV3)
+//                    .interactiveDismissDisabled(true)
+//                    .accentColor(.pink)
+//                    .toggleStyle(SwitchToggleStyle(tint: Color.pink))
+                PrototypeSearch(showSheet: $showNewSheet)
                     .accentColor(.pink)
                     .toggleStyle(SwitchToggleStyle(tint: Color.pink))
             })

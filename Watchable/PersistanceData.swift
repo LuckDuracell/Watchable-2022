@@ -33,6 +33,26 @@ struct UserSettings: Hashable, Codable, LocalFileStorable {
     var colorScheme: String
 }
 
+struct WatchableItems: Hashable, Codable, LocalFileStorable {
+    static var fileName: String {
+        return "WatchableItems"
+    }
+    var title: String
+    var subtitle: String
+    var themes: [String]
+    var release: Date
+    var synopsis: String
+    var sources: [String]
+    var itemType: Int
+    var poster: URL
+    var seasons: Int
+    var releaseDay: Int
+    var currentlyReleasing: Bool
+    
+    var remindMe: Bool
+    var currentlyWatching: Bool
+}
+
 struct Movie: Hashable, Codable, LocalFileStorable {
     static var fileName: String {
         return "Movie"
