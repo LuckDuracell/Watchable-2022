@@ -51,6 +51,7 @@ struct WatchableItems: Hashable, Codable, LocalFileStorable {
     
     var remindMe: Bool
     var currentlyWatching: Bool
+    var folder: String
 }
 
 struct Movie: Hashable, Codable, LocalFileStorable {

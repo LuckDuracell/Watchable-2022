@@ -9,9 +9,10 @@ import SwiftUI
 
 struct PrototypeSearch: View {
     
+    @Environment(\.colorScheme) var cScheme
     @Binding var showSheet: Bool
-    @State var search = searchInfo(text: "", movies: true, shows: true, themes: [""])
-    @State var items: [WatchableItem] = [WatchableItem(title: "Doctor Strange 2", subtitle: "Multiverse of Madness", themes: ["Action", "Fantasy", "Horror"], release:  movieDate(), synopsis: "Dr Stephen Strange casts a forbidden spell that opens a portal to the multiverse. However, a threat emerges that may be too big for his team to handle.", sources: ["Theater"], itemType: 0, poster: URL(string: "https://nerdist.com/wp-content/uploads/2021/01/DoctorStrangeInTheMultiverseOfMadness_Teaser2_Printed_1-Sht_v4_lg.jpg")!, seasons: 0, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false), WatchableItem(title: "The Lost City", subtitle: "", themes: ["Comedy", "Action"], release:  movieDate(), synopsis: "Funny movie with the comedies than go to the place author something something famous movie star", sources: ["Theater"], itemType: 0, poster: URL(string: "https://m.media-amazon.com/images/M/MV5BMmIwYzFhODAtY2I1YS00ZDdmLTkyYWQtZjI5NDIwMDc2MjEyXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg")!, seasons: 0, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false), WatchableItem(title: "The Witcher", subtitle: "", themes: ["Action", "Fantasy"], release: Date(), synopsis: "Henry Cavill is super handsome and saves the world with his magical horse and his magical sword skills and drugs", sources: ["Netflix"], itemType: 1, poster: URL(string: "https://resizing.flixster.com/IfomupSdCO8TeDf8kmqq3Py4tys=/ems.ZW1zLXByZC1hc3NldHMvdHZzZWFzb24vZTk1NGUyZTItMWEzZC00MzY2LTkxODktZjAyY2NkNzY2ZmU3LmpwZw==")!, seasons: 2, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false), WatchableItem(title: "The Flash", subtitle: "", themes: ["Action", "Sci-Fi", "Comedy"], release:  Date(), synopsis: "When a random science dude gets stuck by lightning his whole life is turned upsidedown in this wacky show about how a genius with the ability to think at superspeed and move faster than god somehow manages to fail at even being slightly helpful", sources: ["CW Seed", "Youtube TV", "Netflix"], itemType: 1, poster: URL(string: "https://images.cwtv.com/images/cw/show-vertical/the-flash.jpg")!, seasons: 8, releaseDay: 3, currentlyReleasing: true, remindMe: true, currentlyWatching: false)]
+    @State var search = searchInfo(text: "", movies: true, shows: true, themes: [])
+    @State var items: [WatchableItem] = [WatchableItem(title: "Doctor Strange 2", subtitle: "Multiverse of Madness", themes: ["Action", "Fantasy", "Horror"], release:  movieDate(), synopsis: "Dr Stephen Strange casts a forbidden spell that opens a portal to the multiverse. However, a threat emerges that may be too big for his team to handle.", sources: ["Theater"], itemType: 0, poster: URL(string: "https://nerdist.com/wp-content/uploads/2021/01/DoctorStrangeInTheMultiverseOfMadness_Teaser2_Printed_1-Sht_v4_lg.jpg")!, seasons: 0, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: ""), WatchableItem(title: "The Lost City", subtitle: "", themes: ["Comedy", "Action"], release:  movieDate(), synopsis: "Funny movie with the comedies than go to the place author something something famous movie star", sources: ["Theater"], itemType: 0, poster: URL(string: "https://m.media-amazon.com/images/M/MV5BMmIwYzFhODAtY2I1YS00ZDdmLTkyYWQtZjI5NDIwMDc2MjEyXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg")!, seasons: 0, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: ""), WatchableItem(title: "The Witcher", subtitle: "", themes: ["Action", "Fantasy"], release: Date(), synopsis: "Henry Cavill is super handsome and saves the world with his magical horse and his magical sword skills and drugs", sources: ["Netflix"], itemType: 1, poster: URL(string: "https://resizing.flixster.com/IfomupSdCO8TeDf8kmqq3Py4tys=/ems.ZW1zLXByZC1hc3NldHMvdHZzZWFzb24vZTk1NGUyZTItMWEzZC00MzY2LTkxODktZjAyY2NkNzY2ZmU3LmpwZw==")!, seasons: 2, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: ""), WatchableItem(title: "The Flash", subtitle: "", themes: ["Action", "Sci-Fi", "Comedy"], release:  Date(), synopsis: "When a random science dude gets stuck by lightning his whole life is turned upsidedown in this wacky show about how a genius with the ability to think at superspeed and move faster than god somehow manages to fail at even being slightly helpful", sources: ["CW Seed", "Youtube TV", "Netflix"], itemType: 1, poster: URL(string: "https://images.cwtv.com/images/cw/show-vertical/the-flash.jpg")!, seasons: 8, releaseDay: 3, currentlyReleasing: true, remindMe: true, currentlyWatching: false, folder: "")]
     
     var body: some View {
         NavigationView {
@@ -20,6 +21,23 @@ struct PrototypeSearch: View {
                 .edgesIgnoringSafeArea(.all)
                 ScrollView {
                     VStack(alignment: .leading) {
+                        HStack {
+                            Spacer()
+                            Button {
+                                
+                            } label: {
+                                HStack() {
+                                    Text(search.themes.isEmpty ? "All" : "\(search.themes.joined())")
+                                    Image(systemName: "chevron.down")
+                                }
+                                .font(.footnote)
+                                .padding(7)
+                                .background(getBackgroundColors(cScheme: cScheme))
+                                .cornerRadius(10)
+                            }
+                            .padding(.horizontal)
+                            .accentColor(.pink)
+                        }
                         VStack(alignment: .leading) {
                             HStack {
                                 Text("SEARCH:")
@@ -31,12 +49,13 @@ struct PrototypeSearch: View {
                                 } label: {
                                     HStack {
                                         Text("Movies")
-                                        Image(systemName: search.movies ? "checkmark" : "")
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(search.movies ? .accentColor : getBackgroundColors(cScheme: cScheme))
                                     }
-                                    .frame(width: UIScreen.main.bounds.width * 0.19, alignment: .leading)
+                                    //.frame(width: UIScreen.main.bounds.width * 0.19, alignment: .leading)
                                     .font(.footnote)
                                     .padding(7)
-                                    .background(Color.white)
+                                    .background(getBackgroundColors(cScheme: cScheme))
                                     .cornerRadius(10)
                                 }
                                 Button {
@@ -44,12 +63,13 @@ struct PrototypeSearch: View {
                                 } label: {
                                     HStack() {
                                         Text("Shows")
-                                        Image(systemName: search.shows ? "checkmark" : "")
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(search.shows ? .accentColor : getBackgroundColors(cScheme: cScheme))
                                     }
-                                    .frame(width: UIScreen.main.bounds.width * 0.19, alignment: .leading)
+                                   // .frame(width: UIScreen.main.bounds.width * 0.19, alignment: .leading)
                                     .font(.footnote)
                                     .padding(7)
-                                    .background(Color.white)
+                                    .background(getBackgroundColors(cScheme: cScheme))
                                     .cornerRadius(10)
                                 }
                             } .padding(.horizontal)
@@ -57,7 +77,7 @@ struct PrototypeSearch: View {
                             TextField("", text: $search.text)
                                 .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                                 .padding()
-                                .background(Color.white)
+                                .background(getBackgroundColors(cScheme: cScheme))
                                 .cornerRadius(15)
                         }
                         Divider()
@@ -71,7 +91,7 @@ struct PrototypeSearch: View {
                                 .padding()
                             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], content: {
                                 ForEach(items.indices, id: \.self, content: { index  in
-                                    NavigationLink(destination: Prototype(showSheet: $showSheet, item: items[index]), label: {
+                                    NavigationLink(destination: Prototype(showSheet: $showSheet, item: items[index]).shadow(color: .black.opacity(0.05), radius: CGFloat(5), x: 0, y: 0), label: {
                                         AsyncImage(url: URL(string: "\(items[index].poster)")) { image in
                                             image
                                                 .resizable()
@@ -98,7 +118,7 @@ struct PrototypeSearch: View {
                         }
                     } .padding()
                 }
-            } .navigationBarTitle("Add Item")
+            } .navigationBarTitle("Search")
         }
         //.frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height, alignment: .center)
         .edgesIgnoringSafeArea(.all)
@@ -116,4 +136,23 @@ struct searchInfo {
     var movies: Bool
     var shows: Bool
     var themes: [String]
+}
+
+func getBackgroundColors(cScheme: ColorScheme) -> Color {
+    let settings = UserSettings.loadFromFile()
+    var output = Color.green
+    if (settings.first?.colorScheme ?? "Match System") == "Match System" {
+        if cScheme == .dark {
+            output = .gray.opacity(0.25)
+        } else {
+            output = .white
+        }
+    } else {
+        if (settings.first?.colorScheme ?? "Always Dark") == "Always Dark" {
+            output = .gray.opacity(0.25)
+        } else {
+            output = .white
+        }
+    }
+    return output
 }

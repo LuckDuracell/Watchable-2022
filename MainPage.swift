@@ -499,6 +499,7 @@ struct MainPage: View {
                 PrototypeSearch(showSheet: $showNewSheet)
                     .accentColor(.pink)
                     .toggleStyle(SwitchToggleStyle(tint: Color.pink))
+                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 0)
             })
         } .accentColor(.pink)
 //        .alert(isPresented: $ytEasterEgg, content: {

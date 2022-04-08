@@ -22,8 +22,9 @@ struct WatchableItem: Codable {
     
     var remindMe: Bool //if the user wants to be reminded
     var currentlyWatching: Bool //goes in watching section of list
+    var folder: String
 }
 
 func itemToItems(item: WatchableItem) -> WatchableItems {
-    return WatchableItems(title: item.title, subtitle: item.subtitle, themes: item.themes, release: item.release, synopsis: item.synopsis, sources: item.sources, itemType: item.itemType, poster: item.poster, seasons: item.seasons, releaseDay: item.releaseDay, currentlyReleasing: item.currentlyReleasing, remindMe: item.remindMe, currentlyWatching: item.currentlyWatching)
+    return WatchableItems(title: item.title, subtitle: item.subtitle, themes: item.themes, release: item.release, synopsis: item.synopsis, sources: item.sources, itemType: item.itemType, poster: item.poster, seasons: item.seasons, releaseDay: item.releaseDay, currentlyReleasing: item.currentlyReleasing, remindMe: item.remindMe, currentlyWatching: item.currentlyWatching, folder: item.folder)
 }

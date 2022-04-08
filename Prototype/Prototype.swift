@@ -9,15 +9,16 @@ import SwiftUI
 
 struct Prototype: View {
     
+    @Environment(\.colorScheme) var cScheme
     @Binding var showSheet: Bool
-    @State var item = WatchableItem(title: "Doctor Strange 2", subtitle: "Multiverse of Madness", themes: ["Action", "Fantasy", "Horror"], release:  movieDate(), synopsis: "Dr Stephen Strange casts a forbidden spell that opens a portal to the multiverse. However, a threat emerges that may be too big for his team to handle.", sources: ["Theater"], itemType: 0, poster: URL(string: "https://nerdist.com/wp-content/uploads/2021/01/DoctorStrangeInTheMultiverseOfMadness_Teaser2_Printed_1-Sht_v4_lg.jpg")!, seasons: 0, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false)
+    @State var item = WatchableItem(title: "Doctor Strange 2", subtitle: "Multiverse of Madness", themes: ["Action", "Fantasy", "Horror"], release:  movieDate(), synopsis: "Dr Stephen Strange casts a forbidden spell that opens a portal to the multiverse. However, a threat emerges that may be too big for his team to handle.", sources: ["Theater"], itemType: 0, poster: URL(string: "https://nerdist.com/wp-content/uploads/2021/01/DoctorStrangeInTheMultiverseOfMadness_Teaser2_Printed_1-Sht_v4_lg.jpg")!, seasons: 0, releaseDay: 8, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "")
     @State var watchableList = WatchableItems.loadFromFile()
     
     var body: some View {
         ZStack {
             Color(UIColor.systemGroupedBackground)
                 .edgesIgnoringSafeArea(.all)
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 HStack {
                     AsyncImage(url: URL(string: "\(item.poster)")) { image in
                         image
@@ -47,16 +48,28 @@ struct Prototype: View {
                             .bold()
                             .padding()
                             .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
-                            .background(Color.white)
-                            .cornerRadius(10)
-                        Text("Releasing \(item.release.formatted(date: .abbreviated, time: .omitted))")
-                            .font(.subheadline)
-                            .bold()
-                            .foregroundColor(.red)
-                            .padding()
-                            .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
-                            .background(Color.white)
+                            .background(getBackgroundColors(cScheme: cScheme))
                             .cornerRadius(15)
+                        if item.release > Date() {
+                            Text("Releasing \(item.release.formatted(date: .abbreviated, time: .omitted))")
+                                .font(.subheadline)
+                                .bold()
+                                .foregroundColor(.red)
+                                .padding()
+                                .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
+                                .background(getBackgroundColors(cScheme: cScheme))
+                                .cornerRadius(15)
+                        } else {
+                            Text("\(item.itemType == 1 ? "Premiered" : "Released") \(item.release.formatted(date: .abbreviated, time: .omitted))")
+                                .font(.subheadline)
+                                .bold()
+                                .foregroundColor(.red)
+                                .padding()
+                                .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
+                                .background(getBackgroundColors(cScheme: cScheme))
+                                .cornerRadius(15)
+                        }
+                        
                         if item.itemType == 1 {
                             //show season count if it's a show, and what season they're on if it's currently releasing
                             if item.currentlyReleasing {
@@ -66,16 +79,16 @@ struct Prototype: View {
                                     .foregroundColor(.red)
                                     .padding()
                                     .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
-                                    .background(Color.white)
+                                    .background(getBackgroundColors(cScheme: cScheme))
                                     .cornerRadius(15)
                             } else {
-                                Text("Season \(item.seasons)")
+                                Text("\(item.seasons) Seasons")
                                     .font(.subheadline)
                                     .bold()
                                     .foregroundColor(.red)
                                     .padding()
                                     .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
-                                    .background(Color.white)
+                                    .background(getBackgroundColors(cScheme: cScheme))
                                     .cornerRadius(15)
                             }
                             
@@ -94,7 +107,7 @@ struct Prototype: View {
                     Text(item.synopsis)
                         .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                         .padding()
-                        .background(Color.white)
+                        .background(getBackgroundColors(cScheme: cScheme))
                         .cornerRadius(15)
                 }
                 Divider()
@@ -118,7 +131,7 @@ struct Prototype: View {
                                         .foregroundColor(.red)
                                 } .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                                     .padding()
-                                    .background(Color.white)
+                                    .background(getBackgroundColors(cScheme: cScheme))
                                     .cornerRadius(15)
                             }
                         } else {
@@ -134,7 +147,7 @@ struct Prototype: View {
                                 }
                                 .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                                 .padding()
-                                .background(Color.white)
+                                .background(getBackgroundColors(cScheme: cScheme))
                                 .cornerRadius(15)
                             }
                         }
@@ -148,13 +161,13 @@ struct Prototype: View {
                     Toggle("Currently Watching", isOn: $item.currentlyWatching)
                         .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                         .padding(15)
-                        .background(Color.white)
+                        .background(getBackgroundColors(cScheme: cScheme))
                         .cornerRadius(15)
                 }
                 Toggle("Remind Me", isOn: $item.remindMe)
                     .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                     .padding(15)
-                    .background(Color.white)
+                    .background(getBackgroundColors(cScheme: cScheme))
                     .cornerRadius(15)
                 Spacer()
                 Button {
