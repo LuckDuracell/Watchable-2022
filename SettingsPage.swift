@@ -65,6 +65,29 @@ struct SettingsPage: View {
                 Divider()
                 
                 NavigationLink(destination: {
+                    APITestView()
+                }, label: {
+                    HStack {
+                        Image(systemName: "testtube.2")
+                            .foregroundColor(.pink)
+                            .font(.system(size: 20, weight: .medium))
+                        Text("API Experiment")
+                            .font(.system(size: 20, weight: .medium, design: .rounded))
+                            .foregroundColor(.primary)
+                            .frame(height: 20)
+                            .truncationMode(.tail)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(15)
+                    .padding(.horizontal)
+                        
+                })
+                
+                NavigationLink(destination: {
                     FavoritesView()
                 }, label: {
                     HStack {

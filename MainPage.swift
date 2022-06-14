@@ -492,14 +492,14 @@ struct MainPage: View {
             .sheet(isPresented: $showNewSheet, onDismiss: {
                 loadItems()
             },content: {
-//                NewSheet(showSheet: $showNewSheet, movies: $moviesV3, showsV3: $showsV3)
-//                    .interactiveDismissDisabled(true)
-//                    .accentColor(.pink)
-//                    .toggleStyle(SwitchToggleStyle(tint: Color.pink))
-                PrototypeSearch(showSheet: $showNewSheet)
+                NewSheet(showSheet: $showNewSheet, movies: $moviesV3, showsV3: $showsV3)
+                    .interactiveDismissDisabled(true)
                     .accentColor(.pink)
                     .toggleStyle(SwitchToggleStyle(tint: Color.pink))
-                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 0)
+//                PrototypeSearch(showSheet: $showNewSheet)
+//                    .accentColor(.pink)
+//                    .toggleStyle(SwitchToggleStyle(tint: Color.pink))
+//                    .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 0)
             })
         } .accentColor(.pink)
 //        .alert(isPresented: $ytEasterEgg, content: {
@@ -638,24 +638,37 @@ struct editPage: View {
                 }
             }
             
-            Section(header: Text("Title"), content: {
-                TextField("", text: $title)
-                    .autocapitalization(.words)
-                    .disableAutocorrection(true)
-                    .keyboardType(.alphabet)
-                    .focused($showKeyboard)
-            })
-            Section(header: Text("Notes"), content: {
-                TextEditor(text: $notes)
-                    .keyboardType(.alphabet)
-                    .focused($showKeyboard)
-            })
+            if #available(iOS 16.0, *) {
+                Section {
+                    TextField("Title", text: $title, axis: .vertical)
+                        .autocapitalization(.words)
+                        .disableAutocorrection(true)
+                        .keyboardType(.alphabet)
+                        .focused($showKeyboard)
+                    TextField("Notes", text: $notes, axis: .vertical)
+                        .keyboardType(.alphabet)
+                        .focused($showKeyboard)
+                }
+            } else {
+                Section(header: Text("Title"), content: {
+                    TextField("", text: $title)
+                        .autocapitalization(.words)
+                        .disableAutocorrection(true)
+                        .keyboardType(.alphabet)
+                        .focused($showKeyboard)
+                })
+                Section(header: Text("Notes"), content: {
+                    TextEditor(text: $notes)
+                        .keyboardType(.alphabet)
+                        .focused($showKeyboard)
+                })
+            }
             
             if showPickers {
                 Section {
                     Picker("Theme", selection: $iconTheme, content: {
                         ForEach(themeTypes, id: \.self, content: {
-                            editPickerLabel(name: $0, image: getImageForType(type: $0))
+                            editPickerLabel(name: $0, image: getImageForType($0))
                                 .foregroundColor(.pink)
                         })
                     })
@@ -781,15 +794,15 @@ struct editPage: View {
                 favorited.toggle()
                 if favorited {
                     if type == "Movie" {
-                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: true, change: 2, date: Date()), at: 0)
+                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: true, change: 2, date: Date()), at: 0)
                     } else {
-                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: false, change: 2, date: Date()), at: 0)
+                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: false, change: 2, date: Date()), at: 0)
                     }
                 } else {
                     if type == "Movie" {
-                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: true, change: 3, date: Date()), at: 0)
+                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: true, change: 3, date: Date()), at: 0)
                     } else {
-                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: false, change: 3, date: Date()), at: 0)
+                        history.insert(History(mov: MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: false, change: 3, date: Date()), at: 0)
                     }
                 }
                 History.saveToFile(history)
@@ -829,7 +842,7 @@ struct editPage: View {
                             if active {
                                 selectedDate = Date()
                             }
-                            movies.insert(MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), at: 0)
+                            movies.insert(MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), at: 0)
                             MovieV3.saveToFile(movies)
                         }
                     } else {
@@ -837,7 +850,7 @@ struct editPage: View {
                             if active {
                                 selectedDate = Date()
                             }
-                            showsV3.insert(ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), at: 0)
+                            showsV3.insert(ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), at: 0)
                             ShowV3.saveToFile(showsV3)
                         }
                     }
@@ -853,7 +866,7 @@ struct editPage: View {
             Button("Delete", role: .destructive) {
                 if type == "Movie" {
                     
-                    history.append(History(mov: MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: true, change: 0, date: Date()))
+                    history.append(History(mov: MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: true, change: 0, date: Date()))
                     
                     switch ogType {
                         case 0:
@@ -868,7 +881,7 @@ struct editPage: View {
                     }
                 } else {
                         
-                    history.append(History(mov: MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: false, change: 0, date: Date()))
+                    history.append(History(mov: MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), show: ShowV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), isMovie: false, change: 0, date: Date()))
                         
                     switch ogType {
                         case 0:

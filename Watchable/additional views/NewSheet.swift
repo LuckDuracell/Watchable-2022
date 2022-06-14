@@ -52,35 +52,79 @@ struct NewSheet: View {
                         .padding(.top)
                     }
                     
-                    Section("Title", content: {
-                        TextField("", text: $title)
-                            .autocapitalization(.words)
-                            .disableAutocorrection(true)
-                            .keyboardType(.alphabet)
-                            .focused($showKeyboard)
-                    })
-                    
-                    Section("Notes", content: {
-                        TextEditor(text: $notes)
-                            .keyboardType(.alphabet)
-                            .focused($showKeyboard)
-                    })
-                    
-                    Section {
-                        Picker("Theme", selection: $iconTheme, content: {
-                            ForEach(themeTypes, id: \.self, content: {
-                                pickerLabel(name: $0, image: getImageForType(type: $0))
-                                    .foregroundColor(.pink)
-                            })
+                    if #available(iOS 16.0, *) {
+                        Section {
+                            TextField("Title", text: $title, axis: .vertical)
+                                .autocapitalization(.words)
+                                .disableAutocorrection(true)
+                                .keyboardType(.alphabet)
+                                .focused($showKeyboard)
+                            TextField("Notes", text: $notes, axis: .vertical)
+                                .keyboardType(.alphabet)
+                                .focused($showKeyboard)
+                        }
+                    } else {
+                        Section("Title", content: {
+                            TextField("", text: $title)
+                                .autocapitalization(.words)
+                                .disableAutocorrection(true)
+                                .keyboardType(.alphabet)
+                                .focused($showKeyboard)
                         })
-                        Picker("Platform", selection: $platform, content: {
-                            ForEach(platformTypes, id: \.self, content: {
-                                Text($0)
-                                    .foregroundColor(.pink)
-                            })
+                        Section("Notes", content: {
+                            TextEditor(text: $notes)
+                                .keyboardType(.alphabet)
+                                .focused($showKeyboard)
                         })
                     }
                     
+                    if #available(iOS 16.0, *) {
+                        Section {
+                            HStack {
+                                Text("Theme")
+                                Spacer()
+                                Menu(iconTheme) {
+                                    ForEach(themeTypes, id: \.self, content: { theme in
+                                        Button {
+                                            iconTheme = theme
+                                        } label: {
+                                            pickerLabel(name: theme, image: getImageForType(theme))
+                                                .foregroundColor(.pink)
+                                        }
+                                    })
+                                }
+                            }
+                            HStack {
+                                Text("Platform")
+                                Spacer()
+                                Menu(platform) {
+                                    ForEach(platformTypes, id: \.self, content: { plat in
+                                        Button {
+                                            platform = plat
+                                        } label: {
+                                            Text(plat)
+                                                .foregroundColor(.pink)
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    } else {
+                        Section {
+                            Picker("Theme", selection: $iconTheme, content: {
+                                ForEach(themeTypes, id: \.self, content: {
+                                    pickerLabel(name: $0, image: getImageForType($0))
+                                        .foregroundColor(.pink)
+                                })
+                            })
+                            Picker("Platform", selection: $platform, content: {
+                                ForEach(platformTypes, id: \.self, content: {
+                                    Text($0)
+                                        .foregroundColor(.pink)
+                                })
+                            })
+                        }
+                    }
                     Section {
                         if active != true {
                             Toggle("Upcoming", isOn: $showDate)
@@ -98,11 +142,28 @@ struct NewSheet: View {
                         if typePicker == "Show" {
                             Toggle("Reocurring", isOn: $reoccuring)
                             if reoccuring {
-                                Picker("Releases", selection: $reoccuringDay, content: {
-                                    ForEach(reoccuringTypes, id: \.self, content: {
-                                        Text($0)
+                                if #available(iOS 16.0, *) {
+                                    HStack {
+                                        Text("Releases")
+                                        Spacer()
+                                        Menu(reoccuringDay) {
+                                            ForEach(reoccuringTypes, id: \.self, content: { day in
+                                                Button {
+                                                    reoccuringDay = day
+                                                } label: {
+                                                    Text(day)
+                                                        .foregroundColor(.pink)
+                                                }
+                                            })
+                                        }
+                                    }
+                                } else {
+                                    Picker("Releases", selection: $reoccuringDay, content: {
+                                        ForEach(reoccuringTypes, id: \.self, content: {
+                                            Text($0)
+                                        })
                                     })
-                                })
+                                }
                             }
                         }
                     }
@@ -126,7 +187,7 @@ struct NewSheet: View {
                             if active {
                                 selectedDate = Date()
                             }
-                            movies.insert(MovieV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), at: 0)
+                            movies.insert(MovieV3(name: title, icon: getImageForType(iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, favorited: favorited), at: 0)
                             MovieV3.saveToFile(movies)
                         }
                     } else {
@@ -134,7 +195,7 @@ struct NewSheet: View {
                             if active {
                                 selectedDate = Date()
                             }
-                            showsV3.insert(ShowV3(name: title, icon: getImageForType(type: iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), at: 0)
+                            showsV3.insert(ShowV3(name: title, icon: getImageForType( iconTheme), releaseDate: selectedDate, active: active, info: notes, platform: platform, reoccuring: reoccuring, reoccuringDate: createDate(weekday: dayToInt(day: reoccuringDay)), favorited: favorited), at: 0)
                             ShowV3.saveToFile(showsV3)
                             
                         }
@@ -166,7 +227,7 @@ struct NewSheet_Previews: PreviewProvider {
     }
 }
 
-func getImageForType(type: String) -> String {
+func getImageForType(_ type: String) -> String {
     if type == "Action" {
         return "hourglass"
     } else if type == "Fantasy" {
