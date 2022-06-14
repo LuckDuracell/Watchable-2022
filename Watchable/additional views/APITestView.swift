@@ -28,7 +28,8 @@ struct APITestView: View {
             print("name: \(decodedResponse?.results.first?.name ?? "oops")")
             if decodedResponse?.results.count != 0 {
                 for i in 0...(Int(decodedResponse?.results.count ?? 1)) - 1 {
-                    shows.append(NewShow(backdrop_path: decodedResponse?.results[i].backdrop_path ?? "", id: decodedResponse?.results[i].id ?? 0, name: decodedResponse?.results[i].name ?? "", overview: decodedResponse?.results[i].overview ?? ""))
+                    let res = decodedResponse?.results[i] ?? NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")
+                    shows.append(NewShow(backdrop_path: res.backdrop_path, first_air_date: res.first_air_date, id: res.id, name: res.name, overview: res.overview))
                 }
             }
             
@@ -41,11 +42,14 @@ struct APITestView: View {
             print("name: \(decodedResponse2?.results.first?.title ?? "oops")")
             if decodedResponse2?.results.count != 0 {
                 for i in 0...(Int(decodedResponse2?.results.count ?? 1)) - 1 {
-                    movies.append(NewMovie(backdrop_path: decodedResponse2?.results[i].backdrop_path ?? "", id: decodedResponse2?.results[i].id ?? 0, overview: decodedResponse2?.results[i].overview ?? "", release_date: decodedResponse2?.results[i].release_date ?? "",title: decodedResponse2?.results[i].title ?? ""))
+                    let res = decodedResponse2?.results[i] ?? NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")
+                    movies.append(NewMovie(backdrop_path: res.backdrop_path, id: res.id, overview: res.overview, release_date: res.release_date, title: res.title))
                 }
             }
             if movies == [NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")] {  movies = []  }
-            if shows == [NewShow(backdrop_path: "", id: 0, name: "", overview: "")] {  shows = []  }
+            if shows == [NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")] {  shows = []  }
+            //if movies.count > 6 { movies.removeSubrange(6...(movies.count - 1)) }
+            //if shows.count > 6 { shows.removeSubrange(6...(shows.count - 1)) }
         }
     }
 
@@ -76,44 +80,70 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(movies, id: \.self, content: { movie in
                     NavigationLink(destination: {
-                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: 0, poster: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
+                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: 0, backdrop: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
                     }, label: {
-                        AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")"), content: { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
-                                .clipped()
-                                .cornerRadius(radius: 15, corners: .allCorners)
-                                .overlay(alignment: .bottom,content: {
+                        ZStack {
+                            AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, content: { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
+                                    .clipped()
+                                    .cornerRadius(radius: 15, corners: .allCorners)
+                                    .overlay(alignment: .bottom,content: {
+                                        Text(movie.title)
+                                            .foregroundColor(.primary)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 5)
+                                            .frame(width: device.width * 0.42)
+                                            .background(.thinMaterial)
+                                            .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
+                                    })
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 15)
+                                            .stroke(.pink, lineWidth: 4)
+                                    )
+                            }, placeholder: {
+                                
+                                VStack {
                                     Text(movie.title)
                                         .foregroundColor(.primary)
-                                        .padding(.vertical, 8)
-                                        .frame(width: device.width * 0.42)
+                                        .padding(8)
+                                        .frame(width: device.width * 0.38)
                                         .background(.thinMaterial)
-                                        .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
-                                })
-                                .overlay(
-                                RoundedRectangle(cornerRadius: 15)
-                                    .stroke(.pink, lineWidth: 4)
-                                )
-                        }, placeholder: {
-                            
-                            VStack {
-                                Text(movie.title)
-                                    .foregroundColor(.primary)
-                                    .padding(8)
-                                    .frame(width: device.width * 0.38)
-                                    .background(.thinMaterial)
-                                    .cornerRadius(radius: 10, corners: .allCorners)
-                                    .lineLimit(3)
-                                    .minimumScaleFactor(0.5)
-                            }
-                            .padding()
-                            .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
-                            .background(.pink)
-                            .cornerRadius(radius: 10, corners: .allCorners)
-                        })
+                                        .cornerRadius(radius: 10, corners: .allCorners)
+                                        .lineLimit(3)
+                                        .minimumScaleFactor(0.5)
+                                }
+                                .padding()
+                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
+                                .background(.pink)
+                                .cornerRadius(radius: 10, corners: .allCorners)
+                            })
+                            //https://www.themoviedb.org/t/p/w500/n7qOW6GkspVb53G92CZMRSwk7Ed.jpg
+                            AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, content: { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
+                                    .clipped()
+                                    .cornerRadius(radius: 15, corners: .allCorners)
+                                    .overlay(alignment: .bottom,content: {
+                                        Text(movie.title)
+                                            .foregroundColor(.primary)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 5)
+                                            .frame(width: device.width * 0.42)
+                                            .background(.thinMaterial)
+                                            .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
+                                    })
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 15)
+                                            .stroke(.pink, lineWidth: 4)
+                                    )
+                            }, placeholder: {
+                            })
+                        }
                     })
                 })
             })
@@ -123,45 +153,83 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(shows, id: \.self, content: { show in
                     NavigationLink(destination: {
-                        //APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: whereToWatch(show.id, true), itemType: , poster: <#T##URL#>, seasons: <#T##Int#>, releaseDay: <#T##Int#>, currentlyReleasing: <#T##Bool#>, remindMe: <#T##Bool#>, currentlyWatching: <#T##Bool#>, folder: <#T##String#>))
+                        APIAdd(item: WatchableItem(title: show.name, subtitle: "", themes: [], release: show.first_air_date.convertToDate(), synopsis: show.overview, sources: [], itemType: 1, backdrop: URL(string: "https://www.themoviedb.org/t/p/w500/\(show.poster_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: show.id))
                     }, label: {
-                        AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")"), content: { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
-                                .clipped()
-                                .cornerRadius(radius: 15, corners: .allCorners)
-                                .overlay(alignment: .bottom,content: {
+                        ZStack {
+                            AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, content: { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
+                                    .clipped()
+                                    .cornerRadius(radius: 15, corners: .allCorners)
+                                    .overlay(alignment: .bottom,content: {
+                                        Text(show.name)
+                                            .foregroundColor(.primary)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 5)
+                                            .frame(width: device.width * 0.42)
+                                            .background(.thinMaterial)
+                                            .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
+                                    })
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 15)
+                                            .stroke(.pink, lineWidth: 4)
+                                    )
+                            }, placeholder: {
+                                
+                                VStack {
                                     Text(show.name)
                                         .foregroundColor(.primary)
-                                        .padding(.vertical, 8)
-                                        .padding(.horizontal, 5)
-                                        .frame(width: device.width * 0.42)
+                                        .padding(8)
+                                        .frame(width: device.width * 0.38)
                                         .background(.thinMaterial)
-                                        .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
-                                })
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .stroke(.pink, lineWidth: 4)
-                                )
-                        }, placeholder: {
-                            
-                            VStack {
-                                Text(show.name)
-                                    .foregroundColor(.primary)
-                                    .padding(8)
-                                    .frame(width: device.width * 0.38)
-                                    .background(.thinMaterial)
-                                    .cornerRadius(radius: 10, corners: .allCorners)
-                                    .lineLimit(3)
-                                    .minimumScaleFactor(0.5)
-                            }
-                            .padding()
-                            .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
-                            .background(.pink)
-                            .cornerRadius(radius: 10, corners: .allCorners)
-                        })
+                                        .cornerRadius(radius: 10, corners: .allCorners)
+                                        .lineLimit(3)
+                                        .minimumScaleFactor(0.5)
+                                }
+                                .padding()
+                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
+                                .background(.pink)
+                                .cornerRadius(radius: 10, corners: .allCorners)
+                            })
+                            AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/w500/\(show.poster_path ?? "")"), content: { image in
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
+                                    .clipped()
+                                    .cornerRadius(radius: 15, corners: .allCorners)
+                                    .overlay(alignment: .bottom,content: {
+                                        Text(show.name)
+                                            .foregroundColor(.primary)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 5)
+                                            .frame(width: device.width * 0.42)
+                                            .background(.thinMaterial)
+                                            .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
+                                    })
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 15)
+                                            .stroke(.pink, lineWidth: 4)
+                                    )
+                            }, placeholder: {
+//                                VStack {
+//                                    Text(show.name)
+//                                        .foregroundColor(.primary)
+//                                        .padding(8)
+//                                        .frame(width: device.width * 0.38)
+//                                        .background(.thinMaterial)
+//                                        .cornerRadius(radius: 10, corners: .allCorners)
+//                                        .lineLimit(3)
+//                                        .minimumScaleFactor(0.5)
+//                                }
+//                                .padding()
+//                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
+//                                .background(.pink)
+//                                .cornerRadius(radius: 10, corners: .allCorners)
+                            })
+                        }
                     })
                 })
             })
@@ -188,9 +256,11 @@ struct NewShow: Codable, Hashable {
     //var original_language: String
     //var vote_count: Int
     var backdrop_path: String?
+    var first_air_date: String
     var id: Int
     var name: String
     var overview: String
+    var poster_path: String?
     //var original_name: String
     //var total_results: Int
     //var total_pages: Int
@@ -211,6 +281,7 @@ struct NewMovie: Codable, Hashable {
     var overview: String
     var release_date: String
     var title: String
+    var poster_path: String?
     //var original_name: String
     //var total_results: Int
     //var total_pages: Int
@@ -249,25 +320,4 @@ extension String {
         }
     }
     
-}
-
-struct Source: Codable, Hashable {
-    var results: ProviderLocale
-}
-
-struct ProviderLocale: Codable, Hashable {
-    var US: [Provider]
-}
-struct Provider: Codable, Hashable {
-    var link: String
-    var buy: [ProviderBuy]
-    var flatrate: [ProviderFlatrate]
-}
-
-struct ProviderBuy: Codable, Hashable {
-    var provider_name: String
-}
-
-struct ProviderFlatrate: Codable, Hashable {
-    var provider_name: String
 }
