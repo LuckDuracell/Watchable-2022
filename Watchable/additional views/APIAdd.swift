@@ -9,9 +9,31 @@ import SwiftUI
 
 struct APIAdd: View {
     
+    let key = API().key
+    
+    
     @Environment(\.colorScheme) var cScheme
-    @Binding var item: WatchableItem
+    @State var item: WatchableItem
     @State var watchableList = WatchableItems.loadFromFile()
+    
+    func gatherSources() {
+        Task {
+            var output: [String] = []
+            let key = API().key
+            
+            let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/\(item.itemType == 0 ? "movie" : "tv")/\(item.id)/watch/providers?api_key=\(key)")!)
+            let decodedResponse = try? JSONDecoder().decode(Source.self, from: data)
+            if decodedResponse?.results.US.count != 0 {
+                for i in 0...(Int(decodedResponse?.results.US.count ?? 1)) - 1 {
+                    for i2 in 0...(Int(decodedResponse?.results.US[i].flatrate.count ?? 1)) - 1 {
+                        output.append(decodedResponse?.results.US[i].flatrate[i2].provider_name ?? "")
+                    }
+                }
+            }
+            item.sources = output
+        }
+    }
+    
     
     var body: some View {
         ZStack {
@@ -22,8 +44,8 @@ struct APIAdd: View {
                     AsyncImage(url: URL(string: "\(item.poster)")) { image in
                         image
                             .resizable()
-                            .frame(width: UIScreen.main.bounds.width * 0.35, height: (UIScreen.main.bounds.width * 0.35) * (1.6), alignment: .center)
                             .scaledToFill()
+                            .frame(width: UIScreen.main.bounds.width * 0.35, height: (UIScreen.main.bounds.width * 0.35) * (1.6), alignment: .center)
                             .cornerRadius(15)
                     } placeholder: {
                         Color.gray.opacity(0.2)
@@ -188,6 +210,9 @@ struct APIAdd: View {
         .padding(.vertical, 25)
         .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.98, alignment: .center)
         .padding()
+        .onAppear(perform: {
+            gatherSources()
+        })
     }
 }
 

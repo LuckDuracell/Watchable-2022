@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A1346EE2858682C0076210A /* APIAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1346ED2858682C0076210A /* APIAdd.swift */; };
+		0A1346F228591A5F0076210A /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1346F128591A5F0076210A /* APIKey.swift */; };
 		0A14215827F16F56003B88E0 /* AppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A14215727F16F56003B88E0 /* AppIconView.swift */; };
 		0A2478C327F4E733004EE145 /* GuideBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2478C227F4E733004EE145 /* GuideBox.swift */; };
 		0A2478C527F4E825004EE145 /* APITestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2478C427F4E825004EE145 /* APITestView.swift */; };
@@ -48,6 +49,7 @@
 
 /* Begin PBXFileReference section */
 		0A1346ED2858682C0076210A /* APIAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIAdd.swift; sourceTree = "<group>"; };
+		0A1346F128591A5F0076210A /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
 		0A14215727F16F56003B88E0 /* AppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconView.swift; sourceTree = "<group>"; };
 		0A2478C227F4E733004EE145 /* GuideBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideBox.swift; sourceTree = "<group>"; };
 		0A2478C427F4E825004EE145 /* APITestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITestView.swift; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 				0A2478C427F4E825004EE145 /* APITestView.swift */,
 				0A1346ED2858682C0076210A /* APIAdd.swift */,
 				0ABAFD0626ED607A00563D89 /* NewSheet.swift */,
+				0A1346F128591A5F0076210A /* APIKey.swift */,
 			);
 			name = "additional views";
 			path = "Watchable/additional views";
@@ -334,6 +337,7 @@
 				0ABAFD0726ED607A00563D89 /* NewSheet.swift in Sources */,
 				0A61289D26B3D43300098972 /* WatchableApp.swift in Sources */,
 				0A14215827F16F56003B88E0 /* AppIconView.swift in Sources */,
+				0A1346F228591A5F0076210A /* APIKey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

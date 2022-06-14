@@ -9,18 +9,17 @@ import SwiftUI
 
 struct APITestView: View {
     
-    @State private var device = deviceScreen()
-    
+    let device = deviceScreen()
+    let key = API().key
     @State var query = ""
     @State var movies: [NewMovie] = []
     @State var shows: [NewShow] = []
     @Environment(\.colorScheme) var colorScheme
-    
     private var columns = [GridItem(.flexible()), GridItem(.flexible())]
     
     func runSearch() {
         Task {
-            let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/tv?api_key=[key]&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
+            let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/tv?api_key=\(key)&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
             shows = []
             print("data: \(data)")
             let decodedResponse = try? JSONDecoder().decode(ShowResult.self, from: data)
@@ -33,7 +32,7 @@ struct APITestView: View {
                 }
             }
             
-            let (data2, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/movie?api_key=[key]]&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
+            let (data2, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/movie?api_key=\(key)&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
             movies = []
             print("data: \(data2)")
             let decodedResponse2 = try? JSONDecoder().decode(MovieResult.self, from: data2)
@@ -41,11 +40,12 @@ struct APITestView: View {
             //print("total: \(decodedResponse2)")
             print("name: \(decodedResponse2?.results.first?.title ?? "oops")")
             if decodedResponse2?.results.count != 0 {
-                for i in 0...(Int(decodedResponse?.results.count ?? 1)) - 1 {
+                for i in 0...(Int(decodedResponse2?.results.count ?? 1)) - 1 {
                     movies.append(NewMovie(backdrop_path: decodedResponse2?.results[i].backdrop_path ?? "", id: decodedResponse2?.results[i].id ?? 0, overview: decodedResponse2?.results[i].overview ?? "", release_date: decodedResponse2?.results[i].release_date ?? "",title: decodedResponse2?.results[i].title ?? ""))
                 }
             }
-            
+            if movies == [NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")] {  movies = []  }
+            if shows == [NewShow(backdrop_path: "", id: 0, name: "", overview: "")] {  shows = []  }
         }
     }
 
@@ -54,6 +54,9 @@ struct APITestView: View {
         ScrollView {
             HStack {
                 TextField("Search", text: $query)
+                    .autocapitalization(.words)
+                    .disableAutocorrection(true)
+                    .keyboardType(.alphabet)
                     .onSubmit {
                         runSearch()
                     }
@@ -73,20 +76,20 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(movies, id: \.self, content: { movie in
                     NavigationLink(destination: {
-                        //APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: <#T##Int#>, poster: <#T##URL#>, seasons: <#T##Int#>, releaseDay: <#T##Int#>, currentlyReleasing: <#T##Bool#>, remindMe: <#T##Bool#>, currentlyWatching: <#T##Bool#>, folder: <#T##String#>))
+                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: 0, poster: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
                     }, label: {
                         AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")"), content: { image in
                             image
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: device.width * 0.45, height: device.width * 0.4 * 1.5, alignment: .center)
+                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
                                 .clipped()
                                 .cornerRadius(radius: 15, corners: .allCorners)
                                 .overlay(alignment: .bottom,content: {
                                     Text(movie.title)
                                         .foregroundColor(.primary)
                                         .padding(.vertical, 8)
-                                        .frame(width: device.width * 0.45)
+                                        .frame(width: device.width * 0.42)
                                         .background(.thinMaterial)
                                         .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
                                 })
@@ -100,14 +103,14 @@ struct APITestView: View {
                                 Text(movie.title)
                                     .foregroundColor(.primary)
                                     .padding(8)
-                                    .frame(width: device.width * 0.4)
+                                    .frame(width: device.width * 0.38)
                                     .background(.thinMaterial)
                                     .cornerRadius(radius: 10, corners: .allCorners)
                                     .lineLimit(3)
                                     .minimumScaleFactor(0.5)
                             }
                             .padding()
-                            .frame(width: device.width * 0.45, height: device.width * 0.4 * 1.5)
+                            .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
                             .background(.pink)
                             .cornerRadius(radius: 10, corners: .allCorners)
                         })
@@ -120,13 +123,13 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(shows, id: \.self, content: { show in
                     NavigationLink(destination: {
-                        //APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: , poster: <#T##URL#>, seasons: <#T##Int#>, releaseDay: <#T##Int#>, currentlyReleasing: <#T##Bool#>, remindMe: <#T##Bool#>, currentlyWatching: <#T##Bool#>, folder: <#T##String#>))
+                        //APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: whereToWatch(show.id, true), itemType: , poster: <#T##URL#>, seasons: <#T##Int#>, releaseDay: <#T##Int#>, currentlyReleasing: <#T##Bool#>, remindMe: <#T##Bool#>, currentlyWatching: <#T##Bool#>, folder: <#T##String#>))
                     }, label: {
                         AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")"), content: { image in
                             image
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: device.width * 0.45, height: device.width * 0.4 * 1.5, alignment: .center)
+                                .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5, alignment: .center)
                                 .clipped()
                                 .cornerRadius(radius: 15, corners: .allCorners)
                                 .overlay(alignment: .bottom,content: {
@@ -134,7 +137,7 @@ struct APITestView: View {
                                         .foregroundColor(.primary)
                                         .padding(.vertical, 8)
                                         .padding(.horizontal, 5)
-                                        .frame(width: device.width * 0.45)
+                                        .frame(width: device.width * 0.42)
                                         .background(.thinMaterial)
                                         .cornerRadius(radius: 15, corners: [.bottomLeft, .bottomRight])
                                 })
@@ -148,14 +151,14 @@ struct APITestView: View {
                                 Text(show.name)
                                     .foregroundColor(.primary)
                                     .padding(8)
-                                    .frame(width: device.width * 0.4)
+                                    .frame(width: device.width * 0.38)
                                     .background(.thinMaterial)
                                     .cornerRadius(radius: 10, corners: .allCorners)
                                     .lineLimit(3)
                                     .minimumScaleFactor(0.5)
                             }
                             .padding()
-                            .frame(width: device.width * 0.45, height: device.width * 0.4 * 1.5)
+                            .frame(width: device.width * 0.42, height: device.width * 0.4 * 1.5)
                             .background(.pink)
                             .cornerRadius(radius: 10, corners: .allCorners)
                         })
@@ -246,4 +249,25 @@ extension String {
         }
     }
     
+}
+
+struct Source: Codable, Hashable {
+    var results: ProviderLocale
+}
+
+struct ProviderLocale: Codable, Hashable {
+    var US: [Provider]
+}
+struct Provider: Codable, Hashable {
+    var link: String
+    var buy: [ProviderBuy]
+    var flatrate: [ProviderFlatrate]
+}
+
+struct ProviderBuy: Codable, Hashable {
+    var provider_name: String
+}
+
+struct ProviderFlatrate: Codable, Hashable {
+    var provider_name: String
 }
