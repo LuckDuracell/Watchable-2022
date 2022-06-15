@@ -16,6 +16,8 @@ struct APIAdd: View {
     @State var item: WatchableItem
     @State var watchableList = WatchableItems.loadFromFile()
     
+    @State private var themeOverlay = false
+    
     func gatherSources() {
         Task {
             var output: [String] = []
@@ -59,10 +61,6 @@ struct APIAdd: View {
             
             let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/\(item.itemType == 0 ? "movie" : "tv")/\(item.id)?api_key=\(key)&language=en-US")!)
             let decodedResponse = try? JSONDecoder().decode(TVDetails.self, from: data)
-            print("DETAILS:")
-            print("url https://api.themoviedb.org/3/\(item.itemType == 0 ? "movie" : "tv")/\(item.id)?api_key=\(key)&language=en-US")
-            print("id \(item.id)")
-            print("key \(key)")
             let res = decodedResponse ?? TVDetails(networks: [], number_of_seasons: 0, genres: [])
             item.seasons = res.number_of_seasons ?? 0
             if res.genres.count != 0 {
@@ -70,8 +68,10 @@ struct APIAdd: View {
                     item.themes.append(res.genres[i].name)
                 }
             }
-            for i in res.networks.indices {
-                if res.networks[i].name == "tv asahi" && item.sources.contains("Crunchryoll") == false { item.sources.append("Crunchyroll") }
+            if (res.networks != nil) {
+                for i in res.networks!.indices {
+                    if res.networks![i].name == "tv asahi" && item.sources.contains("Crunchryoll") == false { item.sources.append("Crunchyroll") }
+                }
             }
         }
     }
@@ -137,6 +137,11 @@ struct APIAdd: View {
                                 .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
                                 .background(getBackgroundColors(cScheme: cScheme))
                                 .cornerRadius(15)
+                                .onTapGesture(perform: {
+                                    withAnimation {
+                                        themeOverlay = true
+                                    }
+                                })
                         }
                         if item.release > Date() {
                             Text("Releasing \(item.release.formatted(date: .abbreviated, time: .omitted))")
@@ -185,56 +190,87 @@ struct APIAdd: View {
                     
                 } .padding(.top)
                 Divider()
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    .opacity(0.5)
-                VStack(alignment: .leading) {
-                    Text("SYNOPSIS:")
-                        .font(Font.footnote)
-                        .foregroundColor(.gray)
-                    Text(item.synopsis)
-                        .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
-                        .padding()
-                        .background(getBackgroundColors(cScheme: cScheme))
-                        .cornerRadius(15)
-                }
-                Divider()
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    .opacity(0.5)
+//                    .padding(.horizontal)
+//                    .padding(.vertical, 5)
+//                    .opacity(0.5)
                 VStack {
-                    if item.sources.isEmpty != true {
-                        VStack(alignment: .leading) {
-                            Text("WHERE TO WATCH:")
-                                .font(Font.footnote)
-                                .foregroundColor(.gray)
-                            ForEach(item.sources, id: \.self,  content: { source in
-                                if source == "Theater" {
-                                    Button {
-                                        UIApplication.shared.open(URL(string: "https://fandango.com/search?q=\(titleToFandengoLink(title: item.title))")!)
-                                    } label: {
-                                        HStack {
-                                            Text("Get Tickets")
-                                                .foregroundColor(.pink)
-                                            Spacer()
-                                            Image(systemName: "arrow.up.right.square")
-                                                .foregroundColor(.pink)
-                                        } .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                    VStack(alignment: .leading) {
+                        Text("SYNOPSIS:")
+                            .font(Font.footnote)
+                            .foregroundColor(.gray)
+                        Text(item.synopsis)
+                            .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                            .padding()
+                            .background(getBackgroundColors(cScheme: cScheme))
+                            .cornerRadius(15)
+                    }
+                    Divider()
+//                        .padding(.horizontal)
+//                        .padding(.vertical, 5)
+//                        .opacity(0.5)
+                    VStack {
+                        if item.sources.isEmpty != true {
+                            VStack(alignment: .leading) {
+                                Text("WHERE TO WATCH:")
+                                    .font(Font.footnote)
+                                    .foregroundColor(.gray)
+                                ForEach(item.sources, id: \.self,  content: { source in
+                                    if source == "Theater" {
+                                        Button {
+                                            UIApplication.shared.open(URL(string: "https://fandango.com/search?q=\(titleToFandengoLink(title: item.title))")!)
+                                        } label: {
+                                            HStack {
+                                                Text("Get Tickets")
+                                                    .foregroundColor(.pink)
+                                                Spacer()
+                                                Image(systemName: "arrow.up.right.square")
+                                                    .foregroundColor(.pink)
+                                            } .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                                                .padding()
+                                                .background(getBackgroundColors(cScheme: cScheme))
+                                                .cornerRadius(15)
+                                        }
+                                    } else {
+                                        Button {
+                                            openSource(source: source, title: item.title)
+                                        } label: {
+                                            HStack {
+                                                Text(source)
+                                                    .foregroundColor(.pink)
+                                                Spacer()
+                                                if checkSource(source) {
+                                                    Image(systemName: "arrow.up.right.square")
+                                                        .foregroundColor(.pink)
+                                                }
+                                            }
+                                            .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                                             .padding()
                                             .background(getBackgroundColors(cScheme: cScheme))
                                             .cornerRadius(15)
+                                        }
                                     }
-                                } else {
+                                })
+                            }
+                        }
+                        if item.buySources.isEmpty == false && item.sources.isEmpty == false {
+                            Divider()
+                        }
+                        if item.buySources.isEmpty != true {
+                            VStack(alignment: .leading) {
+                                Text("WHERE TO BUY:")
+                                    .font(Font.footnote)
+                                    .foregroundColor(.gray)
+                                ForEach(item.buySources, id: \.self,  content: { source in
                                     Button {
-                                        openSource(source: source, title: item.title)
+                                        openBuySource(source: source, title: item.title)
                                     } label: {
                                         HStack {
                                             Text(source)
                                                 .foregroundColor(.pink)
                                             Spacer()
-                                            if checkSource(source) {
+                                            if checkBuySource(source) {
                                                 Image(systemName: "arrow.up.right.square")
-                                                    .foregroundColor(.pink)
+                                                .foregroundColor(.pink)
                                             }
                                         }
                                         .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
@@ -242,55 +278,30 @@ struct APIAdd: View {
                                         .background(getBackgroundColors(cScheme: cScheme))
                                         .cornerRadius(15)
                                     }
-                                }
-                            })
+                                })
+                            }
                         }
                     }
-                    if item.buySources.isEmpty == false && item.sources.isEmpty == false {
+                    if item.buySources.isEmpty == false || item.sources.isEmpty == false {
                         Divider()
+//                            .padding(.horizontal)
+//                            .padding(.vertical, 5)
+//                            .opacity(0.5)
                     }
-                    if item.buySources.isEmpty != true {
-                        VStack(alignment: .leading) {
-                            Text("WHERE TO BUY:")
-                                .font(Font.footnote)
-                                .foregroundColor(.gray)
-                            ForEach(item.buySources, id: \.self,  content: { source in
-                                Button {
-                                    openSource(source: source, title: item.title)
-                                } label: {
-                                    HStack {
-                                        Text(source)
-                                            .foregroundColor(.pink)
-                                        Spacer()
-                                        Image(systemName: "arrow.up.right.square")
-                                            .foregroundColor(.pink)
-                                    }
-                                    .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
-                                    .padding()
-                                    .background(getBackgroundColors(cScheme: cScheme))
-                                    .cornerRadius(15)
-                                }
-                            })
+                    VStack {
+                        if item.release < Date() {
+                            Toggle("Currently Watching", isOn: $item.currentlyWatching)
+                                .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                                .padding(15)
+                                .background(getBackgroundColors(cScheme: cScheme))
+                                .cornerRadius(15)
                         }
-                    }
-                }
-                Divider()
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    .opacity(0.5)
-                VStack {
-                    if item.release < Date() {
-                        Toggle("Currently Watching", isOn: $item.currentlyWatching)
+                        Toggle("Remind Me", isOn: $item.remindMe)
                             .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                             .padding(15)
                             .background(getBackgroundColors(cScheme: cScheme))
                             .cornerRadius(15)
                     }
-                    Toggle("Remind Me", isOn: $item.remindMe)
-                        .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
-                        .padding(15)
-                        .background(getBackgroundColors(cScheme: cScheme))
-                        .cornerRadius(15)
                 }
                 Spacer()
                 Button {
@@ -305,6 +316,27 @@ struct APIAdd: View {
                 }
             }
             .padding(10)
+            
+            
+            //Themes Overlay
+            ZStack {
+                Rectangle()
+                    .opacity(0)
+                    .edgesIgnoringSafeArea(.all)
+                    .background(.regularMaterial)
+                Text(themesToString(themes: item.themes))
+                    .font(.largeTitle)
+                    .bold() .padding()
+            }
+            .onTapGesture(perform: {
+                withAnimation {
+                    themeOverlay = false
+                }
+            })
+            .opacity(themeOverlay ? 1 : 0)
+            .allowsHitTesting(themeOverlay)
+            
+            
         }
         .padding(.vertical, 25)
         .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.98, alignment: .center)
@@ -408,6 +440,34 @@ func checkSource(_ source: String) -> Bool {
     return output
 }
 
+func openBuySource(source: String, title: String) {
+    let youtube = "https://www.youtube.com/results?search_query=\(titleToFandengoLink(title: title))"
+    switch source {
+    case "Apple iTunes":
+        UIApplication.shared.open(URL(string: "videos://search")!)
+    case "Amazon Video":
+        UIApplication.shared.open(URL(string: "aiv://aiv/search")!)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            UIApplication.shared.open(URL(string: "https://primevideo.com")!)
+        })
+    case "Youtube":
+        UIApplication.shared.open(URL(string: youtube)!)
+    case "YouTube":
+        UIApplication.shared.open(URL(string: youtube)!)
+    default:
+        print("ERROR: NO APPLICATION ASSOSIATED WITH PLATFORM, THIS BUTTON SHOULD NOT HAVE BEEN VISIBLE")
+    }
+}
+
+func checkBuySource(_ source: String) -> Bool {
+    var output = false
+    let known = ["Apple iTunes", "Amazon Video", "Youtube", "YouTube"]
+    for i in known.indices {
+        if source.contains(known[i]) { output = true }
+    }
+    return output
+}
+
 
 func intToDayString(int: Int) -> String {
     var output = ""
@@ -450,7 +510,7 @@ struct ProviderName: Codable, Hashable {
 
 
 struct TVDetails: Codable, Hashable {
-    var networks: [Network]
+    var networks: [Network]?
     var number_of_seasons: Int?
     var genres: [Genre]
 }
