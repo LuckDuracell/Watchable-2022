@@ -19,13 +19,27 @@ struct APIAdd: View {
     func gatherSources() {
         Task {
             var output: [String] = []
+            var buyOutput: [String] = []
             let key = API().key
             
             let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/\(item.itemType == 0 ? "movie" : "tv")/\(item.id)/watch/providers?api_key=\(key)")!)
             let decodedResponse = try? JSONDecoder().decode(Source.self, from: data)
-            if decodedResponse?.results.US.flatrate.count != 0 {
-                for i in 0...(Int(decodedResponse?.results.US.flatrate.count ?? 1)) - 1 {
-                    output.append(decodedResponse?.results.US.flatrate[i].provider_name ?? "")
+            let res = decodedResponse?.results.US ?? Provider(buy: [], flatrate: [], ads: [])
+            if (res.flatrate != nil) {
+                for i in res.flatrate!.indices {
+                    output.append(res.flatrate![i].provider_name)
+                }
+            }
+            if (res.ads != nil) {
+                for i in res.ads!.indices {
+                    if output.contains(res.ads![i].provider_name) != true {
+                        output.append(res.ads![i].provider_name)
+                    }
+                }
+            }
+            if (res.buy != nil) {
+                for i in res.buy!.indices {
+                    buyOutput.append(res.buy![i].provider_name)
                 }
             }
             print("url https://api.themoviedb.org/3/\(item.itemType == 0 ? "movie" : "tv")/\(item.id)/watch/providers?api_key=\(key)")
@@ -35,6 +49,7 @@ struct APIAdd: View {
 //            print("results \(decodedResponse?.results)")
 //            print("us \(decodedResponse?.results.US)")
             item.sources = output
+            item.buySources = buyOutput
         }
     }
     
@@ -48,12 +63,28 @@ struct APIAdd: View {
             print("url https://api.themoviedb.org/3/\(item.itemType == 0 ? "movie" : "tv")/\(item.id)?api_key=\(key)&language=en-US")
             print("id \(item.id)")
             print("key \(key)")
-            let res = decodedResponse ?? TVDetails(number_of_seasons: 0, genres: [])
+            let res = decodedResponse ?? TVDetails(networks: [], number_of_seasons: 0, genres: [])
             item.seasons = res.number_of_seasons ?? 0
             if res.genres.count != 0 {
                 for i in res.genres.indices  {
                     item.themes.append(res.genres[i].name)
                 }
+            }
+            for i in res.networks.indices {
+                if res.networks[i].name == "tv asahi" && item.sources.contains("Crunchryoll") == false { item.sources.append("Crunchyroll") }
+            }
+        }
+    }
+    
+    func checkIfTheaters() {
+        Task {
+            let key = API().key
+            
+            let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(key)&language=en-US&page=1")!)
+            let decodedResponse = try? JSONDecoder().decode(TheaterMovies.self, from: data)
+            let res = decodedResponse?.results ?? []
+            for i in res.indices {
+                if res[i].id == item.id && item.sources.contains("Theater") == false { item.sources.insert("Theater", at: 0) }
             }
         }
     }
@@ -92,24 +123,26 @@ struct APIAdd: View {
                                 .font(.title2)
                                 .bold()
                                 .multilineTextAlignment(.leading)
-                            Text(item.subtitle)
-                                .font(.title3)
-                                .bold()
-                                .multilineTextAlignment(.center)
-                                .padding(.bottom, 2)
+//                            Text(item.subtitle)
+//                                .font(.title3)
+//                                .bold()
+//                                .multilineTextAlignment(.center)
+//                                .padding(.bottom, 2)
                         }
-                        Text(themesToString(themes: item.themes))
-                            .font(.subheadline)
-                            .bold()
-                            .padding()
-                            .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
-                            .background(getBackgroundColors(cScheme: cScheme))
-                            .cornerRadius(15)
+                        if item.themes.isEmpty != true {
+                            Text(themesToString(themes: item.themes))
+                                .font(.subheadline)
+                                .bold()
+                                .padding()
+                                .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
+                                .background(getBackgroundColors(cScheme: cScheme))
+                                .cornerRadius(15)
+                        }
                         if item.release > Date() {
                             Text("Releasing \(item.release.formatted(date: .abbreviated, time: .omitted))")
                                 .font(.subheadline)
                                 .bold()
-                                .foregroundColor(.red)
+                                .foregroundColor(.pink)
                                 .padding()
                                 .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
                                 .background(getBackgroundColors(cScheme: cScheme))
@@ -118,7 +151,7 @@ struct APIAdd: View {
                             Text("\(item.itemType == 1 ? "Premiered" : "Released") \(item.release.formatted(date: .abbreviated, time: .omitted))")
                                 .font(.subheadline)
                                 .bold()
-                                .foregroundColor(.red)
+                                .foregroundColor(.pink)
                                 .padding()
                                 .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
                                 .background(getBackgroundColors(cScheme: cScheme))
@@ -131,7 +164,7 @@ struct APIAdd: View {
                                 Text("Season \(item.seasons) - Every \(intToDayString(int: item.releaseDay))")
                                     .font(.subheadline)
                                     .bold()
-                                    .foregroundColor(.red)
+                                    .foregroundColor(.pink)
                                     .padding()
                                     .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
                                     .background(getBackgroundColors(cScheme: cScheme))
@@ -140,7 +173,7 @@ struct APIAdd: View {
                                 Text("\(item.seasons) Seasons")
                                     .font(.subheadline)
                                     .bold()
-                                    .foregroundColor(.red)
+                                    .foregroundColor(.pink)
                                     .padding()
                                     .frame(width: UIScreen.main.bounds.width * 0.55, height: 50, alignment: .leading)
                                     .background(getBackgroundColors(cScheme: cScheme))
@@ -169,61 +202,96 @@ struct APIAdd: View {
                     .padding(.horizontal)
                     .padding(.vertical, 5)
                     .opacity(0.5)
-                VStack(alignment: .leading) {
-                    Text("WHERE TO WATCH:")
-                        .font(Font.footnote)
-                        .foregroundColor(.gray)
-                    ForEach(item.sources, id: \.self,  content: { source in
-                        if source == "Theater" {
-                            Button {
-                                UIApplication.shared.open(URL(string: "https://fandengo.com/search?q=\(titleToFandengoLink(title: item.title))")!)
-                            } label: {
-                                HStack {
-                                    Text("Get Tickets")
-                                        .foregroundColor(.red)
-                                    Spacer()
-                                    Image(systemName: "arrow.up.right.square")
-                                        .foregroundColor(.red)
-                                } .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                VStack {
+                    if item.sources.isEmpty != true {
+                        VStack(alignment: .leading) {
+                            Text("WHERE TO WATCH:")
+                                .font(Font.footnote)
+                                .foregroundColor(.gray)
+                            ForEach(item.sources, id: \.self,  content: { source in
+                                if source == "Theater" {
+                                    Button {
+                                        UIApplication.shared.open(URL(string: "https://fandango.com/search?q=\(titleToFandengoLink(title: item.title))")!)
+                                    } label: {
+                                        HStack {
+                                            Text("Get Tickets")
+                                                .foregroundColor(.pink)
+                                            Spacer()
+                                            Image(systemName: "arrow.up.right.square")
+                                                .foregroundColor(.pink)
+                                        } .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                                            .padding()
+                                            .background(getBackgroundColors(cScheme: cScheme))
+                                            .cornerRadius(15)
+                                    }
+                                } else {
+                                    Button {
+                                        openSource(source: source, title: item.title)
+                                    } label: {
+                                        HStack {
+                                            Text(source)
+                                                .foregroundColor(.pink)
+                                            Spacer()
+                                            if checkSource(source) {
+                                                Image(systemName: "arrow.up.right.square")
+                                                    .foregroundColor(.pink)
+                                            }
+                                        }
+                                        .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                                        .padding()
+                                        .background(getBackgroundColors(cScheme: cScheme))
+                                        .cornerRadius(15)
+                                    }
+                                }
+                            })
+                        }
+                    }
+                    if item.buySources.isEmpty == false && item.sources.isEmpty == false {
+                        Divider()
+                    }
+                    if item.buySources.isEmpty != true {
+                        VStack(alignment: .leading) {
+                            Text("WHERE TO BUY:")
+                                .font(Font.footnote)
+                                .foregroundColor(.gray)
+                            ForEach(item.buySources, id: \.self,  content: { source in
+                                Button {
+                                    openSource(source: source, title: item.title)
+                                } label: {
+                                    HStack {
+                                        Text(source)
+                                            .foregroundColor(.pink)
+                                        Spacer()
+                                        Image(systemName: "arrow.up.right.square")
+                                            .foregroundColor(.pink)
+                                    }
+                                    .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                                     .padding()
                                     .background(getBackgroundColors(cScheme: cScheme))
                                     .cornerRadius(15)
-                            }
-                        } else {
-                            Button {
-                                openSource(source: source, title: item.title)
-                            } label: {
-                                HStack {
-                                    Text(source)
-                                        .foregroundColor(.red)
-                                    Spacer()
-                                    Image(systemName: "arrow.up.right.square")
-                                        .foregroundColor(.red)
                                 }
-                                .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
-                                .padding()
-                                .background(getBackgroundColors(cScheme: cScheme))
-                                .cornerRadius(15)
-                            }
+                            })
                         }
-                    })
+                    }
                 }
                 Divider()
                     .padding(.horizontal)
                     .padding(.vertical, 5)
                     .opacity(0.5)
-                if item.release < Date() {
-                    Toggle("Currently Watching", isOn: $item.currentlyWatching)
+                VStack {
+                    if item.release < Date() {
+                        Toggle("Currently Watching", isOn: $item.currentlyWatching)
+                            .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
+                            .padding(15)
+                            .background(getBackgroundColors(cScheme: cScheme))
+                            .cornerRadius(15)
+                    }
+                    Toggle("Remind Me", isOn: $item.remindMe)
                         .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
                         .padding(15)
                         .background(getBackgroundColors(cScheme: cScheme))
                         .cornerRadius(15)
                 }
-                Toggle("Remind Me", isOn: $item.remindMe)
-                    .frame(width: UIScreen.main.bounds.width * 0.85, alignment: .leading)
-                    .padding(15)
-                    .background(getBackgroundColors(cScheme: cScheme))
-                    .cornerRadius(15)
                 Spacer()
                 Button {
 
@@ -244,6 +312,9 @@ struct APIAdd: View {
         .onAppear(perform: {
             gatherSources()
             getDetails()
+            if item.itemType == 0 {
+                checkIfTheaters()
+            }
         })
     }
 }
@@ -328,6 +399,16 @@ func openSource(source: String, title: String) {
     }
 }
 
+func checkSource(_ source: String) -> Bool {
+    var output = false
+    let known = ["Netflix", "Hulu", "HBO Max", "Amazon Prime Video", "Disney Plus", "Youtube TV", "Apple TV", "Peacock", "Crunchyroll", "Funimation Now"]
+    for i in known.indices {
+        if source.contains(known[i]) { output = true }
+    }
+    return output
+}
+
+
 func intToDayString(int: Int) -> String {
     var output = ""
     switch int {
@@ -358,26 +439,36 @@ struct ProviderLocale: Codable, Hashable {
     var US: Provider
 }
 struct Provider: Codable, Hashable {
-    var buy: [ProviderBuy]?
-    var flatrate: [ProviderFlatrate]
+    var buy: [ProviderName]?
+    var flatrate: [ProviderName]?
+    var ads: [ProviderName]?
 }
 
-struct ProviderBuy: Codable, Hashable {
-    var provider_name: String
-}
-
-struct ProviderFlatrate: Codable, Hashable {
+struct ProviderName: Codable, Hashable {
     var provider_name: String
 }
 
 
 struct TVDetails: Codable, Hashable {
+    var networks: [Network]
     var number_of_seasons: Int?
     var genres: [Genre]
 }
 
+struct Network: Codable, Hashable {
+    var name: String
+}
+
 struct Genre: Codable, Hashable {
     var name: String
+}
+
+struct TheaterMovies: Codable, Hashable {
+    var results: [idInfo]
+}
+
+struct idInfo: Codable, Hashable {
+    var id: Int
 }
 
 struct WatchableItem: Codable {
@@ -387,6 +478,7 @@ struct WatchableItem: Codable {
     var release: Date //day that item premiered
     var synopsis: String
     var sources: [String] //theater, netflix, crunchyroll ---- need seasons availible
+    var buySources: [String]
     var itemType: Int //0 = movie, 1 = show
     var backdrop: URL //link to backdrop Poster, needs AsyncImage
     var poster: URL //link to poster, needs AsyncImage

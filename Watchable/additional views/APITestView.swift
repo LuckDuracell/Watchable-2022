@@ -80,7 +80,7 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(movies, id: \.self, content: { movie in
                     NavigationLink(destination: {
-                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: 0, backdrop: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
+                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], buySources: [], itemType: 0, backdrop: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
                     }, label: {
                         ZStack {
                             AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, content: { image in
@@ -152,7 +152,7 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(shows, id: \.self, content: { show in
                     NavigationLink(destination: {
-                        APIAdd(item: WatchableItem(title: show.name, subtitle: "", themes: [], release: show.first_air_date.convertToDate(), synopsis: show.overview, sources: [], itemType: 1, backdrop: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/w500/\(show.poster_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: show.id))
+                        APIAdd(item: WatchableItem(title: show.name, subtitle: "", themes: [], release: show.first_air_date.convertToDate(), synopsis: show.overview, sources: [], buySources: [], itemType: 1, backdrop: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/w500/\(show.poster_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: show.id))
                     }, label: {
                         ZStack {
                             AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, content: { image in
