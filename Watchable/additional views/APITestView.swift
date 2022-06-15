@@ -20,33 +20,40 @@ struct APITestView: View {
     @State var showingPop = true
     
     func runSearch() {
-        withAnimation {
-            showingPop = false
-        }
-        Task {
-            let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/tv?api_key=\(key)&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
-            shows = []
-            let decodedResponse = try? JSONDecoder().decode(ShowResult.self, from: data)
-            if decodedResponse?.results.count != 0 {
-                for i in 0...(Int(decodedResponse?.results.count ?? 1)) - 1 {
-                    let res = decodedResponse?.results[i] ?? NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")
-                    shows.append(NewShow(backdrop_path: res.backdrop_path, first_air_date: res.first_air_date, id: res.id, name: res.name, overview: res.overview, poster_path: res.poster_path))
-                }
+        if query != "" {
+            withAnimation {
+                showingPop = false
             }
-            
-            let (data2, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/movie?api_key=\(key)&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
-            movies = []
-            let decodedResponse2 = try? JSONDecoder().decode(MovieResult.self, from: data2)
-            if decodedResponse2?.results.count != 0 {
-                for i in 0...(Int(decodedResponse2?.results.count ?? 1)) - 1 {
-                    let res = decodedResponse2?.results[i] ?? NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")
-                    movies.append(NewMovie(backdrop_path: res.backdrop_path, id: res.id, overview: res.overview, release_date: res.release_date, title: res.title, poster_path: res.poster_path))
+            Task {
+                let (data, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/tv?api_key=\(key)&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
+                shows = []
+                let decodedResponse = try? JSONDecoder().decode(ShowResult.self, from: data)
+                if decodedResponse?.results.count != 0 {
+                    for i in 0...(Int(decodedResponse?.results.count ?? 1)) - 1 {
+                        let res = decodedResponse?.results[i] ?? NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")
+                        shows.append(NewShow(backdrop_path: res.backdrop_path, first_air_date: res.first_air_date, id: res.id, name: res.name, overview: res.overview, poster_path: res.poster_path))
+                    }
                 }
+                
+                let (data2, _) = try await URLSession.shared.data(from: URL(string:"https://api.themoviedb.org/3/search/movie?api_key=\(key)&language=en-US&page=1&query=\(query.urlSafe)&include_adult=false")!)
+                movies = []
+                let decodedResponse2 = try? JSONDecoder().decode(MovieResult.self, from: data2)
+                if decodedResponse2?.results.count != 0 {
+                    for i in 0...(Int(decodedResponse2?.results.count ?? 1)) - 1 {
+                        let res = decodedResponse2?.results[i] ?? NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")
+                        movies.append(NewMovie(backdrop_path: res.backdrop_path, id: res.id, overview: res.overview, release_date: res.release_date, title: res.title, poster_path: res.poster_path))
+                    }
+                }
+                if movies == [NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")] {  movies = []  }
+                if shows == [NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")] {  shows = []  }
+                if movies.count > 4 { movies.removeSubrange(4...(movies.count - 1)) }
+                if shows.count > 4 { shows.removeSubrange(4...(shows.count - 1)) }
             }
-            if movies == [NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")] {  movies = []  }
-            if shows == [NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")] {  shows = []  }
-            if movies.count > 4 { movies.removeSubrange(4...(movies.count - 1)) }
-            if shows.count > 4 { shows.removeSubrange(4...(shows.count - 1)) }
+        } else {
+            withAnimation {
+                showingPop = true
+                runPopSearch()
+            }
         }
     }
     
