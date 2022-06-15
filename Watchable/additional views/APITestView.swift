@@ -29,7 +29,7 @@ struct APITestView: View {
             if decodedResponse?.results.count != 0 {
                 for i in 0...(Int(decodedResponse?.results.count ?? 1)) - 1 {
                     let res = decodedResponse?.results[i] ?? NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")
-                    shows.append(NewShow(backdrop_path: res.backdrop_path, first_air_date: res.first_air_date, id: res.id, name: res.name, overview: res.overview))
+                    shows.append(NewShow(backdrop_path: res.backdrop_path, first_air_date: res.first_air_date, id: res.id, name: res.name, overview: res.overview, poster_path: res.poster_path))
                 }
             }
             
@@ -43,13 +43,13 @@ struct APITestView: View {
             if decodedResponse2?.results.count != 0 {
                 for i in 0...(Int(decodedResponse2?.results.count ?? 1)) - 1 {
                     let res = decodedResponse2?.results[i] ?? NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")
-                    movies.append(NewMovie(backdrop_path: res.backdrop_path, id: res.id, overview: res.overview, release_date: res.release_date, title: res.title))
+                    movies.append(NewMovie(backdrop_path: res.backdrop_path, id: res.id, overview: res.overview, release_date: res.release_date, title: res.title, poster_path: res.poster_path))
                 }
             }
             if movies == [NewMovie(backdrop_path: "", id: 0, overview: "", release_date: "", title: "")] {  movies = []  }
             if shows == [NewShow(backdrop_path: "", first_air_date: "", id: 0, name: "", overview: "")] {  shows = []  }
-            //if movies.count > 6 { movies.removeSubrange(6...(movies.count - 1)) }
-            //if shows.count > 6 { shows.removeSubrange(6...(shows.count - 1)) }
+            if movies.count > 4 { movies.removeSubrange(4...(movies.count - 1)) }
+            if shows.count > 4 { shows.removeSubrange(4...(shows.count - 1)) }
         }
     }
 
@@ -80,7 +80,7 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(movies, id: \.self, content: { movie in
                     NavigationLink(destination: {
-                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: 0, backdrop: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
+                        APIAdd(item: WatchableItem(title: movie.title, subtitle: "", themes: [], release: movie.release_date.convertToDate(), synopsis: movie.overview, sources: [], itemType: 0, backdrop: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: movie.id))
                     }, label: {
                         ZStack {
                             AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(movie.backdrop_path ?? "")")!, content: { image in
@@ -104,7 +104,7 @@ struct APITestView: View {
                                             .stroke(.pink, lineWidth: 4)
                                     )
                             }, placeholder: {
-                                
+
                                 VStack {
                                     Text(movie.title)
                                         .foregroundColor(.primary)
@@ -120,8 +120,7 @@ struct APITestView: View {
                                 .background(.pink)
                                 .cornerRadius(radius: 10, corners: .allCorners)
                             })
-                            //https://www.themoviedb.org/t/p/w500/n7qOW6GkspVb53G92CZMRSwk7Ed.jpg
-                            AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/w500/\(movie.poster_path ?? "")")!, content: { image in
+                            AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/w500\(movie.poster_path ?? "")"), content: { image in
                                 image
                                     .resizable()
                                     .scaledToFill()
@@ -153,7 +152,7 @@ struct APITestView: View {
             LazyVGrid(columns: columns, content: {
                 ForEach(shows, id: \.self, content: { show in
                     NavigationLink(destination: {
-                        APIAdd(item: WatchableItem(title: show.name, subtitle: "", themes: [], release: show.first_air_date.convertToDate(), synopsis: show.overview, sources: [], itemType: 1, backdrop: URL(string: "https://www.themoviedb.org/t/p/w500/\(show.poster_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: show.id))
+                        APIAdd(item: WatchableItem(title: show.name, subtitle: "", themes: [], release: show.first_air_date.convertToDate(), synopsis: show.overview, sources: [], itemType: 1, backdrop: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, poster: URL(string: "https://www.themoviedb.org/t/p/w500/\(show.poster_path ?? "")")!, seasons: 0, releaseDay: 0, currentlyReleasing: false, remindMe: false, currentlyWatching: false, folder: "", id: show.id))
                     }, label: {
                         ZStack {
                             AsyncImage(url: URL(string: "https://www.themoviedb.org/t/p/original\(show.backdrop_path ?? "")")!, content: { image in
@@ -177,7 +176,7 @@ struct APITestView: View {
                                             .stroke(.pink, lineWidth: 4)
                                     )
                             }, placeholder: {
-                                
+
                                 VStack {
                                     Text(show.name)
                                         .foregroundColor(.primary)
